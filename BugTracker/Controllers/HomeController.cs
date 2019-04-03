@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BugTracker.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +9,13 @@ namespace BugTracker.Controllers
 {
     public class HomeController : Controller
     {
+        private ApplicationDbContext DbContext;
+
+        public HomeController()
+        {
+            DbContext = new ApplicationDbContext();
+        }
+
         public ActionResult Index()
         {
             return View();
