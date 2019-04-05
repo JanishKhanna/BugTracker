@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
 namespace BugTracker.Models.ViewModels
 {
-    public class ProjectViewModel
+    public class CreateEditProjectViewModel
     {
-        public int ProjectId { get; set; }
+        [Required]
         public string Name { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
         public DateTime DateCreated { get; set; }
-        public DateTime? DateUpdated { get; set; }
+        public DateTime DateUpdated { get; set; }
     }
 }
