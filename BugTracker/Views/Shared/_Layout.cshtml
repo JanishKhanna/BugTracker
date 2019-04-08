@@ -102,7 +102,7 @@
             @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin)))
             {
                 <li class="nav-item">
-                    <a class="nav-link" href="charts.html">
+                    <a class="nav-link" href="@Url.Action("ManageUsers", "Home")">
                         @*<i class="fas fa-fw fa-chart-area"></i>*@
                         <span>Manage Users</span>
                     </a>

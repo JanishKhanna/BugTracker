@@ -1,0 +1,63 @@
+﻿@model IEnumerable<BugTracker.Models.ViewModels.ManageUsersViewModel>
+
+@{
+    ViewBag.Title = "ManageUsers";
+}
+
+@section css {
+    <link rel="stylesheet"
+          href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+}
+
+@section Scripts {
+    <script type="text/javascript"
+            src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js">
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sample-datatables').DataTable();
+        });
+    </script>
+}
+
+<h2>ManageUsers</h2>
+
+<table id="sample-datatables" class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DisplayName)
+            </th>
+            <th>
+                Roles
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.DisplayName)
+                    <a href="@Url.Action("AddRole", "Home", new { userId = user.UserId })">
+                        <i title="Edit Roles" class="fas fa-edit"></i>
+                    </a>
+                </td>
+                <td style="display:flex; justify-content:flex-start">
+                    @foreach (var role in user.UserRoles)
+                    {
+                        <div style="margin-right:30px">
+                            @role.Name                           
+                            <form method="post" action="@Url.Action("DeleteRole", "Home", new { roleName = role.Name, userId =  user.UserId })">
+                                <button class="fas fa-cut">Delete</button>
+                            </form>
+                        </div>
+
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>

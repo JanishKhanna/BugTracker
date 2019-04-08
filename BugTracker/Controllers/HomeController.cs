@@ -3,6 +3,7 @@ using BugTracker.Models.Domain;
 using BugTracker.Models.MyHelpers;
 using BugTracker.Models.ViewModels;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -155,5 +156,96 @@ namespace BugTracker.Controllers
         {
             return SaveProject(id, formData);
         }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(Roles.Admin))]
+        public ActionResult ManageUsers()
+        {
+            var allUsers = DbContext.Users.ToList();
+            var viewModel = new List<ManageUsersViewModel>();
+            foreach (var user in allUsers)
+            {
+
+                var roles = DbContext.Roles
+                    .Where(role => role.Users
+                    .FirstOrDefault(p => p.UserId == user.Id) != null)
+                    .ToList();
+                var newModel = new ManageUsersViewModel()
+                {
+                    UserId = user.Id,
+                    UserRoles = roles,
+                    DisplayName = user.DisplayName
+                };
+
+                viewModel.Add(newModel);
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(Roles.Admin))]
+        public ActionResult AddRole(string userId)
+        {
+            if (userId == null)
+            {
+                RedirectToAction(nameof(HomeController.Index));
+            }
+
+            var rolesHelper = new UserRolesHelper(DbContext);
+            var listOfRoles = rolesHelper.ListUserRoles(userId).ToList();
+            var viewModel = new AddRoleViewModel()
+            {
+                RolesToAdd = DbContext.Roles
+                .Where(p => !listOfRoles.Contains(p.Name))
+                .Select(p => p.Name)
+                .ToList(),
+                UserId = userId
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(Roles.Admin))]
+        public ActionResult AddRole(string roleName, string userId)
+        {
+            if(userId == null)
+            {
+                RedirectToAction(nameof(HomeController.Index));
+            }
+
+            var rolesHelper = new UserRolesHelper(DbContext);
+
+            bool addedRole = rolesHelper.AddUserToRole(userId, roleName);
+
+            if (!addedRole)
+            {
+                throw new Exception("Role not added");
+            }
+
+            return RedirectToAction(nameof(HomeController.ManageUsers));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(Roles.Admin))]
+        public ActionResult DeleteRole(string roleName, string userId)
+        {
+            if (userId == null)
+            {
+                RedirectToAction(nameof(HomeController.Index));
+            }
+
+            var roleHelper = new UserRolesHelper(DbContext);
+
+            bool roleRemoved = roleHelper.RemoveUserFromRole(userId, roleName);
+
+            if (!roleRemoved)
+            {
+                throw new Exception("Failed to Remove Roles");
+            }
+
+            return RedirectToAction(nameof(HomeController.ManageUsers));
+        }
     }
-}
+};

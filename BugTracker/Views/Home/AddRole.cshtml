@@ -1,0 +1,46 @@
+﻿@model BugTracker.Models.ViewModels.AddRoleViewModel
+
+@{
+    ViewBag.Title = "AddRole";
+}
+
+<h2>AddRole</h2>
+
+
+<div class="form-horizontal">
+    <h4>AddRoleViewModel</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <table id="sample-datatables" class="table">
+        <thead>
+            <tr>
+                <th>
+                    Roles
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var role in Model.RolesToAdd)
+            {
+                <tr>
+                    <td>
+                        <form method="post">
+                            @*@Html.HiddenFor(model => model.UserId)*@
+                            <button>
+                                @role
+                            </button>
+                            <input type="hidden" name="roleName" value="@role" />
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
