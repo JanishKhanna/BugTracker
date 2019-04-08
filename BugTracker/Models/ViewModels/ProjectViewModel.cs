@@ -9,7 +9,7 @@ namespace BugTracker.Models.ViewModels
     {
         public int ProjectId { get; set; }
         public string Name { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public List<ApplicationUser> ApplicationUsers { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
     }

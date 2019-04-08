@@ -24,6 +24,26 @@ namespace BugTracker.Controllers
 
         public ActionResult Index()
         {
+            return View();
+        }
+
+        public ActionResult AllProjects()
+        {
+            var viewModel = ProjectHelper.GetAllProjects()
+                .Select(p => new ProjectViewModel
+                {
+                    ProjectId = p.Id,
+                    Name = p.Name,
+                    DateCreated = p.DateCreated,
+                    DateUpdated = p.DateUpdated,
+                    ApplicationUsers = p.ApplicationUsers
+                }).ToList();
+
+            return View(viewModel);
+        }
+
+        public ActionResult MyProjects()
+        {
             var userId = User.Identity.GetUserId();
             var viewModel = ProjectHelper.GetUsersProjects(userId)
                 .Select(p => new ProjectViewModel
@@ -31,7 +51,8 @@ namespace BugTracker.Controllers
                     ProjectId = p.Id,
                     Name = p.Name,
                     DateCreated = p.DateCreated,
-                    DateUpdated = p.DateUpdated                    
+                    DateUpdated = p.DateUpdated,
+                    ApplicationUsers = p.ApplicationUsers
                 }).ToList();
 
             return View(viewModel);
@@ -85,7 +106,7 @@ namespace BugTracker.Controllers
                     //DateUpdated = DateTime.Now
                     ApplicationUsers = DbContext.Users
                                         .Where(p => p.Id == userId)
-                                        .ToList(),
+                                        .ToList() ?? new List<ApplicationUser>(),
                 };
                 DbContext.Projects.Add(myProject);
             }
@@ -100,7 +121,7 @@ namespace BugTracker.Controllers
                 myProject.DateUpdated = DateTime.Now;
             }
 
-            myProject.Name = formData.Name;            
+            myProject.Name = formData.Name;
 
             DbContext.SaveChanges();
 

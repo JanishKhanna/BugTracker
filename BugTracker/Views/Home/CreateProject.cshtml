@@ -1,0 +1,21 @@
+﻿@model CreateEditProjectViewModel
+
+@{
+    ViewBag.Title = "CreateProject";
+}
+
+<h2>CreateProject</h2>
+
+<form class="form-horizontal" method="post">
+    <div class="form-group">
+        @Html.LabelFor(p => p.Name, "Name")
+        @Html.TextBoxFor(p => p.Name, new { @class = "form-control", placeholder = "Name" })
+    </div>
+    
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Create</button>
+        </div>
+    </div>
+</form>
+

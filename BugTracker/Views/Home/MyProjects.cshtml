@@ -1,0 +1,80 @@
+﻿@model List<ProjectViewModel>
+
+@{
+    ViewBag.Title = "MyProjects";
+}
+
+<h2>MyProjects</h2>
+
+
+@section css {
+    <link rel="stylesheet"
+          href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+}
+
+@section Scripts {
+    <script type="text/javascript"
+            src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js">
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sample-datatables').DataTable();
+        });
+    </script>
+}
+
+
+@if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
+    || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+{
+    @Html.ActionLink("Create Project", "CreateProject")
+}
+
+@if (!Model.Any())
+{
+    <div style="margin-top:15px;">
+        <p><strong>No Projects Available </strong></p>
+    </div>
+}
+else
+{
+    <table id="sample-datatables" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Members</th>
+                <th>Tickets</th>
+                <th>Date Created</th>
+                <th>Date Updated</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model)
+            {
+                <tr>
+                    <td>@project.Name</td>
+                    <td>@project.ApplicationUsers.Count()</td>
+                    <td>0</td>
+                    <td>@project.DateCreated</td>
+                    <td>@project.DateUpdated</td>
+                    <td>
+                        @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
+        || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                        {
+                            <a href="@Url.Action("EditProject", "Home", new { id = project.ProjectId })">
+                                <i title="Edit Project" class="fas fa-edit"></i>
+                            </a>
+                        }
+
+                    </td>
+                    <td>@* edit members *@</td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+

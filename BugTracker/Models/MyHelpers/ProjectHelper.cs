@@ -28,5 +28,7 @@ namespace BugTracker.Models.MyHelpers
                 .Any(user => user.Id == userId))
                 .ToList();
         }
+
+        public List<Project> GetAllProjects() => DbContext.Projects.ToList();
     }
 }
