@@ -13,6 +13,7 @@
     <link href="~/Template/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="~/Template/css/sb-admin.css" rel="stylesheet">
+    @RenderSection("css", false)
 </head>
 
 <body id="page-top">
@@ -35,38 +36,40 @@
         <!-- Navbar -->
         <ul class="navbar-nav ml-auto ml-md-0">
             @*<li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-bell fa-fw"></i>
-                    <span class="badge badge-danger">9+</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-envelope fa-fw"></i>
-                    <span class="badge badge-danger">7</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>*@
+                    <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bell fa-fw"></i>
+                        <span class="badge badge-danger">9+</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-envelope fa-fw"></i>
+                        <span class="badge badge-danger">7</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>*@
             <li class="nav-item dropdown no-arrow">
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user-circle fa-fw"></i>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="#">Settings</a>
-                    <a class="dropdown-item" href="#">Activity Log</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+                <div class="dropdown-menu dropdown-menu-right" style="padding: 10px " aria-labelledby="userDropdown">
+                    @Html.Partial("_LoginPartial")
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="dropdown-item" href="@Url.Action("Index", "Manage")">Settings</a>
+                    }
+
                 </div>
             </li>
         </ul>
@@ -88,23 +91,45 @@
                     <h6 class="dropdown-header">Login Screens:</h6>
                     <a class="dropdown-item" id="loginLink" href=@Url.Action("Login", "Account", routeValues: null)>Log In</a>
                     <a class="dropdown-item" id="registerLink" href=@Url.Action("Register", "Account", routeValues: null)>Register</a>
-                    <a class="dropdown-item" href="~/Template/forgot-password.html">Forgot Password</a>
+                    <a class="dropdown-item" href="@Url.Action("ForgotPassword", "Account", routeValues: null)">Forgot Password</a>
                     <div class="dropdown-divider"></div>
                     @*<h6 class="dropdown-header">Other Pages:</h6>
-                    <a class="dropdown-item" href="404.html">404 Page</a>
-                    <a class="dropdown-item" href="blank.html">Blank Page</a>*@
+                <a class="dropdown-item" href="404.html">404 Page</a>
+                <a class="dropdown-item" href="blank.html">Blank Page</a>*@
                 </div>
             </li>
+
+            @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin)))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="charts.html">
+                        @*<i class="fas fa-fw fa-chart-area"></i>*@
+                        <span>Manage Users</span>
+                    </a>
+                </li>
+            }
+
+            @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
+                || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("AllProjects", "Home")">
+                        @*<i class="fas fa-fw fa-chart-area"></i>*@
+                        <span>All Projects</span>
+                    </a>
+                </li>
+            }
+
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span>
+                <a class="nav-link" href="@Url.Action("MyProjects", "Home")">
+                    @*<i class="fas fa-fw fa-chart-area"></i>*@
+                    <span>My Projects</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="tables.html">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Tables</span>
+                    @*<i class="fas fa-fw fa-table"></i>*@
+                    <span>Tickets</span>
                 </a>
             </li>
         </ul>
@@ -113,7 +138,7 @@
             <hr />
 
         </div>
-    </div>   
+    </div>
 
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>

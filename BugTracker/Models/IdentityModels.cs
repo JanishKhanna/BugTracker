@@ -12,6 +12,7 @@ namespace BugTracker.Models
     public class ApplicationUser : IdentityUser
     {
         public virtual List<Project> Projects { get; set; }
+        public virtual string DisplayName { get; set; }
 
         public ApplicationUser()
         {

@@ -1,10 +1,12 @@
 namespace BugTracker.Migrations
 {
     using BugTracker.Models;
+    using BugTracker.Models.Domain;
     using BugTracker.Models.MyHelpers;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
@@ -55,6 +57,8 @@ namespace BugTracker.Migrations
                 roleManager.Create(submitterRole);
             }
 
+            context.SaveChanges();
+
             ApplicationUser adminUser;
 
             if (!context.Users.Any(p => p.UserName == "admin@mybugtracker.com"))
@@ -63,6 +67,7 @@ namespace BugTracker.Migrations
                 adminUser.UserName = "admin@mybugtracker.com";
                 adminUser.Email = "admin@mybugtracker.com";
                 adminUser.EmailConfirmed = true; //To Test Email if Confirmed or not.
+                adminUser.DisplayName = "Admin Display Name";
 
                 userManager.Create(adminUser, "Password-1");
             }
@@ -75,6 +80,30 @@ namespace BugTracker.Migrations
             {
                 userManager.AddToRole(adminUser.Id, nameof(Roles.Admin));
             }
+
+            context.SaveChanges();
+
+            Project myProject;
+
+            if(!context.Projects.Any(p => p.Name == "My New Project"))
+            {
+                myProject = new Project()
+                {
+                    Name = "My New Project",
+                    ApplicationUsers = new List<ApplicationUser>()
+                    {
+                        adminUser
+                    }
+                };
+
+                context.Projects.Add(myProject);
+            }
+            else
+            {
+                myProject = context.Projects.First(p => p.Name == "My New Project");
+            }
+
+            context.SaveChanges();
         }
     }
 }

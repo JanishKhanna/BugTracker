@@ -7,6 +7,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BugTracker.Models;
+using System.Data.Entity;
+using BugTracker.Models.ViewModels;
 
 namespace BugTracker.Controllers
 {
@@ -15,9 +17,12 @@ namespace BugTracker.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext DbContext;
+
 
         public ManageController()
         {
+            DbContext = new ApplicationDbContext();
         }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -32,9 +37,9 @@ namespace BugTracker.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -64,8 +69,15 @@ namespace BugTracker.Controllers
                 : "";
 
             var userId = User.Identity.GetUserId();
+            var user = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var model = new IndexViewModel
             {
+                UserId = userId,
+                DisplayName = user.DisplayName,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
@@ -213,6 +225,42 @@ namespace BugTracker.Controllers
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
+        [HttpGet]
+        public ActionResult EditDisplayName(string userId)
+        {
+            var user = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+
+            if (user == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index));
+            }
+
+            var viewModel = new EditDisplayNameViewModel();
+            viewModel.UserId = user.Id;
+            viewModel.DisplayName = user.DisplayName;
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult EditDisplayName(EditDisplayNameViewModel formData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            var user = DbContext.Users.FirstOrDefault(p => p.Id == formData.UserId);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index));
+            }
+
+            user.DisplayName = formData.DisplayName;
+
+            DbContext.SaveChanges();
+
+            return RedirectToAction(nameof(HomeController.Index));
+        }
+
         //
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
@@ -333,7 +381,7 @@ namespace BugTracker.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -384,6 +432,6 @@ namespace BugTracker.Controllers
             Error
         }
 
-#endregion
+        #endregion
     }
 }

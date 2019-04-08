@@ -16,6 +16,7 @@ namespace BugTracker.Models.Domain
         public Project()
         {
             ApplicationUsers = new List<ApplicationUser>();
+            DateCreated = DateTime.Now;
         }
     }
 }
