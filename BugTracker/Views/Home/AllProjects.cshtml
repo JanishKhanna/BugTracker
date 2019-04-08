@@ -62,7 +62,11 @@
                         <i title="Edit Project" class="fas fa-edit"></i>
                     </a>
                 </td>
-                <td>@* edit project *@</td>
+                <td>
+                    <a href="@Url.Action("EditMembers", "Home", new { id = project.ProjectId })">
+                        <i title="Edit Members" class="fas fa-user-friends"></i>
+                    </a>
+                </td>
             </tr>
 
         }

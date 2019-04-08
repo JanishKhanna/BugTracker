@@ -247,5 +247,10 @@ namespace BugTracker.Controllers
 
             return RedirectToAction(nameof(HomeController.ManageUsers));
         }
+
+        //public ActionResult ManageProjects()
+        //{
+        //    return View();
+        //}
     }
 };
