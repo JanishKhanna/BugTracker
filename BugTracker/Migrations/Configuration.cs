@@ -33,6 +33,8 @@ namespace BugTracker.Migrations
                new RoleManager<IdentityRole>(
                    new RoleStore<IdentityRole>(context));
 
+            //var ticketTypeManager = new 
+
             if (!context.Roles.Any(p => p.Name == nameof(Roles.Admin)))
             {
                 var adminRole = new IdentityRole(nameof(Roles.Admin));
@@ -55,6 +57,77 @@ namespace BugTracker.Migrations
             {
                 var submitterRole = new IdentityRole(nameof(Roles.Submitter));
                 roleManager.Create(submitterRole);
+            }
+
+            if(!context.TicketTypes.Any(p => p.Name == nameof(TypesOfTicket.Bug)))
+            {
+                var bugTicketType = new TicketType();
+                bugTicketType.Name = nameof(TypesOfTicket.Bug);
+                context.TicketTypes.Add(bugTicketType);
+            }
+
+            if (!context.TicketTypes.Any(p => p.Name == nameof(TypesOfTicket.Feature)))
+            {
+                var featureTicketType = new TicketType();
+                featureTicketType.Name = nameof(TypesOfTicket.Feature);
+                context.TicketTypes.Add(featureTicketType);
+            }
+
+            if (!context.TicketTypes.Any(p => p.Name == nameof(TypesOfTicket.DataBase)))
+            {
+                var dataBaseTicketType = new TicketType();
+                dataBaseTicketType.Name = nameof(TypesOfTicket.DataBase);
+                context.TicketTypes.Add(dataBaseTicketType);
+            }
+
+            if (!context.TicketTypes.Any(p => p.Name == nameof(TypesOfTicket.Support)))
+            {
+                var supportTicketType = new TicketType();
+                supportTicketType.Name = nameof(TypesOfTicket.Support);
+                context.TicketTypes.Add(supportTicketType);
+            }
+
+            if (!context.TicketPriorities.Any(p => p.Name == nameof(TypesOfPriority.Low)))
+            {
+                var lowPriority = new TicketPriority();
+                lowPriority.Name = nameof(TypesOfPriority.Low);
+                context.TicketPriorities.Add(lowPriority);
+            }
+
+            if (!context.TicketPriorities.Any(p => p.Name == nameof(TypesOfPriority.Medium)))
+            {
+                var mediumPriority = new TicketPriority();
+                mediumPriority.Name = nameof(TypesOfPriority.Medium);
+                context.TicketPriorities.Add(mediumPriority);
+            }
+
+            if (!context.TicketPriorities.Any(p => p.Name == nameof(TypesOfPriority.High)))
+            {
+                var highPriority = new TicketPriority();
+                highPriority.Name = nameof(TypesOfPriority.High);
+                context.TicketPriorities.Add(highPriority);
+
+            }
+
+            if (!context.TicketStatuses.Any(p => p.Name == nameof(TypesOfStatus.Open)))
+            {
+                var openStatus = new TicketStatus();
+                openStatus.Name = nameof(TypesOfStatus.Open);
+                context.TicketStatuses.Add(openStatus);
+            }
+
+            if (!context.TicketStatuses.Any(p => p.Name == nameof(TypesOfStatus.Resolved)))
+            {
+                var resolvedStatus = new TicketStatus();
+                resolvedStatus.Name = nameof(TypesOfStatus.Resolved);
+                context.TicketStatuses.Add(resolvedStatus);
+            }
+
+            if (!context.TicketStatuses.Any(p => p.Name == nameof(TypesOfStatus.Rejected)))
+            {
+                var rejectedStatus = new TicketStatus();
+                rejectedStatus.Name = nameof(TypesOfStatus.Rejected);
+                context.TicketStatuses.Add(rejectedStatus);
             }
 
             context.SaveChanges();

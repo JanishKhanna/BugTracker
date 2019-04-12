@@ -12,11 +12,13 @@ namespace BugTracker.Models.Domain
         public virtual List<ApplicationUser> ApplicationUsers { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
+        public virtual List<Ticket> Tickets { get; set; }
 
         public Project()
         {
             ApplicationUsers = new List<ApplicationUser>();
             DateCreated = DateTime.Now;
+            Tickets = new List<Ticket>();
         }
     }
 }
