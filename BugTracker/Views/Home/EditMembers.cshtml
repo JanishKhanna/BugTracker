@@ -1,0 +1,31 @@
+﻿@model ProjectAssigningViewModel
+
+@{
+    ViewBag.Title = "AssignProject";
+}
+
+<h2>Assign Project</h2>
+
+<div class="content-wrapper">
+    <section class="content">
+        <form action="@Url.Action("EditMembers", "Home")" method="post">
+            @Html.ValidationSummary(false)
+            @if (Model.AddUser != null && Model.AddUser.ToList().Any())
+            {
+                <h4>Assign User to the Project</h4>
+                <div class="form-group">
+                    @Html.ListBoxFor(p => p.SelectedAddUsers, Model.AddUser)
+                </div>
+            }
+            @if (Model.DeleteUser != null && Model.DeleteUser.ToList().Any())
+            {
+                <p>Remove User</p>
+                <div class="form-group">
+                    @Html.ListBoxFor(p => p.SelectedDeleteUsers, Model.DeleteUser)
+                </div>
+            }
+            <input type="hidden" name="ProjectId" value="@Model.ProjectId" />
+            <input type="submit" value="Submit!" />
+        </form>
+    </section>
+</div>

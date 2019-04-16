@@ -24,11 +24,12 @@ namespace BugTracker.Controllers
         }
 
         //GET: Tickets
-        public ActionResult Index()
+        public ActionResult AllTickets()
         {
             var viewModel = TicketHelper.GetAllTickets()
                 .Select(p => new TicketViewModel
                 {
+                    Project = p.Project.Name,
                     TicketId = p.Id,
                     Title = p.Title,
                     Description = p.Description,
@@ -37,7 +38,7 @@ namespace BugTracker.Controllers
                     TicketType = DbContext.TicketTypes.First(type => type.Id == p.TicketTypeId).Name,
                     TicketPriority = DbContext.TicketPriorities.First(priority => priority.Id == p.TicketPriorityId).Name,
                     TicketStatus = DbContext.TicketStatuses.First(status => status.Id == p.TicketStatusId).Name
-                });
+                }).ToList();
 
             return View(viewModel);
         }
@@ -45,9 +46,20 @@ namespace BugTracker.Controllers
         [HttpGet]
         [Authorize(Roles = nameof(Roles.Submitter))]
         public ActionResult CreateTicket()
-        {           
+        {
+            var helper = new ProjectHelper(DbContext);
+            var userId = User.Identity.GetUserId();
+            var viewModel = new CreateEditTicketViewModel
+            {
+                Projects = helper.GetUsersProjects(userId)
+                            .Select(p => new SelectListItem
+                            {
+                                Text = p.Name,
+                                Value = p.Id.ToString(),
+                            }).ToList()
+            };
 
-            return View();
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -72,15 +84,21 @@ namespace BugTracker.Controllers
 
                 myTicket = new Ticket()
                 {                    
-                    //DateCreated = DateTime.Now,
-                    //OwnerUser = DbContext.Users
-                    //                .Where(p => p.Id == userId)
-                    //                .ToList()
-                    
-                    //ApplicationUsers = DbContext.Users
-                    //                    .Where(p => p.Id == userId)
-                    //                    .ToList() ?? new List<ApplicationUser>(),
+                    TicketType = DbContext.TicketTypes
+                                    .First(p => p.Name == formData.TicketType),
+                    TicketPriority = DbContext.TicketPriorities         
+                                        .First(p => p.Name == formData.TicketPriority), 
+                    Project = DbContext.Projects
+                                .First(p => p.Id == formData.ProjectId),                           
+                    DateCreated = DateTime.Now,
+                    OwnerUser = DbContext.Users
+                                    .First(p => p.Id == userId),                          
+                    AssignedToUser = DbContext.Users
+                                        .First(p => p.Id == userId),
+                    TicketStatus = DbContext.TicketStatuses
+                                    .First(p => p.Name == "Open")
                 };
+
                 DbContext.Tickets.Add(myTicket);
             }
             else
@@ -89,7 +107,7 @@ namespace BugTracker.Controllers
 
                 if (myTicket == null)
                 {
-                    return RedirectToAction(nameof(HomeController.Index));
+                    return RedirectToAction(nameof(TicketsController.AllTickets));
                 }
                 myTicket.DateUpdated = DateTime.Now;
             }
@@ -99,7 +117,7 @@ namespace BugTracker.Controllers
 
             DbContext.SaveChanges();
 
-            return RedirectToAction(nameof(HomeController.Index));
-        }
+            return RedirectToAction(nameof(TicketsController.AllTickets));
+        }        
     }
 }

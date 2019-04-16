@@ -1,7 +1,40 @@
-﻿
+﻿@model CreateEditTicketViewModel
+
 @{
     ViewBag.Title = "CreateTicket";
 }
 
 <h2>CreateTicket</h2>
 
+<form class="form-horizontal" method="post">
+    <div class="form-group">
+        @Html.LabelFor(p => p.Title, "Title")
+        @Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Title" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(p => p.Description, "Description")
+        @Html.TextAreaFor(p => p.Description, new { @class = "form-control", placeholder = "Description" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(p => p.ProjectId, "Project")
+        @Html.DropDownListFor(p => p.ProjectId, Model.Projects))
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(p => p.TicketType, "TicketType")
+        @Html.DropDownListFor(p => p.TicketType, new SelectList(Enum.GetValues(typeof(TypesOfTicket))))
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(p => p.TicketPriority, "TicketPriority")
+        @Html.DropDownListFor(p => p.TicketPriority, new SelectList(Enum.GetValues(typeof(TypesOfPriority))))
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Create</button>
+        </div>
+    </div>
+</form>

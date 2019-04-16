@@ -14,7 +14,7 @@ namespace BugTracker.Models.Domain
         public string FileUrl { get; set; }
 
         public Ticket Ticket { get; set; }
-        public string TicketId { get; set; }
+        public int TicketId { get; set; }
 
         public ApplicationUser User { get; set; }
         public string UserId { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace BugTracker.Models.ViewModels
 {
@@ -21,6 +22,9 @@ namespace BugTracker.Models.ViewModels
         public string TicketPriority { get; set; }
 
         [Required]
-        public string Project { get; set; }
+        public int ProjectId { get; set; }
+        
+        public List<SelectListItem> Projects { get; set; }      
+
     }
 }

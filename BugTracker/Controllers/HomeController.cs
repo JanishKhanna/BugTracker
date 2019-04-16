@@ -37,7 +37,7 @@ namespace BugTracker.Controllers
                     Name = p.Name,
                     DateCreated = p.DateCreated,
                     DateUpdated = p.DateUpdated,
-                    ApplicationUsers = p.ApplicationUsers
+                    ApplicationUsers = p.ApplicationUsers                   
                 }).ToList();
 
             return View(viewModel);
@@ -246,6 +246,70 @@ namespace BugTracker.Controllers
             }
 
             return RedirectToAction(nameof(HomeController.ManageUsers));
-        }        
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        public ActionResult EditMembers(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction(nameof(HomeController.Index));
+            }
+            var viewModel = new ProjectAssigningViewModel();
+            var myProject = DbContext.Projects.FirstOrDefault(p => p.Id == id);
+            viewModel.ProjectId = myProject.Id;
+            var users = DbContext.Users.ToList();
+            var usersAssigned = myProject.ApplicationUsers.ToList();
+            var userNotAssigned = DbContext.Users.ToList()
+                .Where(p => !usersAssigned.Any(user => user.Id == p.Id))
+                .ToList();
+
+            var usersToAdd = new HashSet<ApplicationUser>(userNotAssigned);
+            var usersToDelete = new HashSet<ApplicationUser>(usersAssigned);
+
+            foreach (var user in usersAssigned)
+            {
+                if (myProject.ApplicationUsers.Contains(user))
+                {
+                    myProject.ApplicationUsers.Remove(user);
+                }
+            }
+            viewModel.AddUser = new MultiSelectList(usersToAdd, "Id", "DisplayName", usersAssigned);
+            viewModel.DeleteUser = new MultiSelectList(usersToDelete, "Id", "DisplayName", userNotAssigned);
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        public ActionResult EditMembers(ProjectAssigningViewModel formData)
+        {
+            var myProject = DbContext.Projects.FirstOrDefault(p => p.Id == formData.ProjectId);
+            if (myProject == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index));
+            }
+
+            if (formData.SelectedDeleteUsers != null)
+            {
+                foreach (var userId in formData.SelectedDeleteUsers)
+                {
+                    var user = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+                    myProject.ApplicationUsers.Remove(user);
+                }
+            }
+
+            if (formData.SelectedAddUsers != null)
+            {
+                foreach (var userId in formData.SelectedAddUsers)
+                {
+                    var user = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+                    myProject.ApplicationUsers.Add(user);
+                }
+            }
+
+            DbContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
-};
+}

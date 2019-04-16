@@ -204,6 +204,7 @@
     <Compile Include="Models\ViewModels\CreateEditTicketViewModel.cs" />
     <Compile Include="Models\ViewModels\EditDisplayNameViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUsersViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProjectAssigningViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\TicketViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -232,6 +233,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="SQL Queries\User vs Projects.sql" />
     <Content Include="SQL Queries\User vs Roles.sql" />
     <Content Include="Template\404.html" />
     <Content Include="Template\blank.html" />
@@ -2008,6 +2010,7 @@
     <Content Include="Views\Home\AddRole.cshtml" />
     <Content Include="Views\Tickets\AllTickets.cshtml" />
     <Content Include="Views\Tickets\CreateTicket.cshtml" />
+    <Content Include="Views\Home\EditMembers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

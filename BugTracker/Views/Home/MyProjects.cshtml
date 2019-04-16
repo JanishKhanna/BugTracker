@@ -69,12 +69,18 @@ else
                         }
 
                     </td>
-                    <td>@* edit members *@</td>
+                    <td>
+                        @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
+        || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                        {
+                            <a href="@Url.Action("EditMembers", "Home", new { id = project.ProjectId })">
+                                <i title="Edit Members" class="fas fa-user-friends"></i>
+                            </a>
+                        }
+                    </td>
                 </tr>
 
             }
         </tbody>
     </table>
 }
-
-

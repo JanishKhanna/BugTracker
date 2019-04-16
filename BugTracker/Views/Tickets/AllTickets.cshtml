@@ -1,7 +1,69 @@
-﻿
+﻿@model List<TicketViewModel>
+
 @{
     ViewBag.Title = "AllTickets";
 }
 
-<h2>AllTickets</h2>
+@section css {
+    <link rel="stylesheet"
+          href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+}
 
+@section Scripts {
+    <script type="text/javascript"
+            src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js">
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sample-datatables').DataTable();
+        });
+    </script>
+}
+
+<h2>All Tickets</h2>
+
+@if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Submitter)))
+{
+    @Html.ActionLink("Create Ticket", "CreateTicket")
+}
+
+<table id="sample-datatables" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Project Name</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Date Created</th>
+            <th>Date Updated</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model)
+        {
+            <tr>
+                <td>@ticket.Title</td>
+                <td>@ticket.Project</td>
+                <td>@ticket.TicketType</td>
+                <td>@ticket.TicketStatus</td>
+                <td>@ticket.TicketPriority</td>
+                <td>@ticket.DateCreated</td>
+                <td>@ticket.DateUpdated</td>
+                <td>
+                    <a href="@Url.Action("EditTicket", "Ticket", new { id = ticket.TicketId })">
+                        <i title="Edit Ticket" class="fas fa-edit"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", "Ticket", new { id = ticket.TicketId })">
+                        <i title="User Details" class="fas fa-user-alt"></i>
+                    </a>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
