@@ -1,0 +1,91 @@
+﻿@model TicketDetailsViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div class="well" style="min-height: 20px;padding: 19px;margin-bottom: 20px;background-color: #f5f5f5;border: 1px solid #e3e3e3;border-radius: 4px;">
+    <div class="row" style="margin-right: -15px;margin-left: -15px;">
+        <div class="col-lg-12" style="position: relative;min-height: 1px;padding-right: 15px;padding-left: 15px;">
+            <table class="table table-condensed no-border" style="width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                    @*</tr>
+                    <tr>*@
+                        <th>Project Name</th>
+                        <th>Type</th>
+                    @*</tr>
+                    <tr>*@
+                        <th>Status</th>
+                        <th>Priority</th>
+                    @*</tr>
+                    <tr>*@
+                        <th>Date Created</th>
+                        <th>Date Updated</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody style="box-sizing: border-box;display: table-row-group;vertical-align: middle;border-color: inherit;">
+                    <tr>
+                        <td>@Model.Title</td>
+                        <td>@Model.Description</td>
+                    @*</tr>
+                    <tr>*@
+                        <td>@Model.ProjectName</td>
+                        <td>@Model.TypesOfTicket</td>
+                    @*</tr>
+                    <tr>*@
+                        <td>@Model.TypesOfStatus</td>
+                        <td>@Model.TypesOfPriority</td>
+                    @*</tr>
+                    <tr>*@
+                        <td>@Model.DateCreated</td>
+                        <td>@Model.DateUpdated</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("CreateComments", "Tickets", new { id = Model.TicketId })">
+                                Comments <i title="Edit Ticket" class="fas fa-comment"></i>
+                            </a>
+
+                            @foreach (var comment in Model.AllComments)
+                            {
+                                //if ((User.IsInRole("Admin")))
+                                {
+                                    <div class="panel-body"> 
+                                        <ul class="list-unstyled">
+                                            <li>
+                                                <div class="well well-sm">
+                                                    <div class="header"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        @*<p>@comment.User.DisplayName</p>*@
+                                        <p>@comment.Comment</p>
+                                        <span>Date Created: @comment.DateCreated</span>
+                                        <span>Date Updated: @comment.DateUpdated</span>
+                                    </div>
+                                }
+                            }
+                        </td>
+                        <td>
+                            @*<a href="@Url.Action("Details", "Tickets", new { id = Model.TicketId })">
+                                <i title="User Details" class="fas fa-user-alt"></i>
+                            </a>*@
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

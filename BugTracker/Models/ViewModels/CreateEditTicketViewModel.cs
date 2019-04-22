@@ -16,15 +16,24 @@ namespace BugTracker.Models.ViewModels
         public string Description { get; set; }
         
         [Required]
-        public string TicketType { get; set; }
+        public int TicketTypeId { get; set; }
+
+        public SelectList TicketType { get; set; }
 
         [Required]
-        public string TicketPriority { get; set; }
+        public int TicketPriorityId { get; set; }
+
+        public SelectList TicketPriority { get; set; }
+
+        [Required]
+        public int TicketStatusId { get; set; }
+
+        public SelectList TicketStatus { get; set; }
 
         [Required]
         public int ProjectId { get; set; }
         
-        public List<SelectListItem> Projects { get; set; }      
+        public SelectList Projects { get; set; }      
 
     }
 }

@@ -1,10 +1,11 @@
 ﻿@model CreateEditTicketViewModel
 
 @{
-    ViewBag.Title = "CreateTicket";
+    ViewBag.Title = "EditTicket";
 }
 
-<h2>CreateTicket</h2>
+<h2>EditTicket</h2>
+
 
 <form class="form-horizontal" method="post">
     <div class="form-group">
@@ -23,18 +24,23 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(p => p.TicketType, "TicketType")
-        @Html.DropDownListFor(p => p.TicketType, new SelectList(Enum.GetValues(typeof(TypesOfTicket))))
+        @Html.LabelFor(p => p.TicketTypeId, "TicketType")
+        @Html.DropDownListFor(p => p.TicketTypeId, Model.TicketType @*new SelectList(Enum.GetValues(typeof(TypesOfTicket)))*@)
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(p => p.TicketPriority, "TicketPriority")
-        @Html.DropDownListFor(p => p.TicketPriority, new SelectList(Enum.GetValues(typeof(TypesOfPriority))))
+        @Html.LabelFor(p => p.TicketPriorityId, "TicketPriority")
+        @Html.DropDownListFor(p => p.TicketPriorityId, Model.TicketPriority @*new SelectList(Enum.GetValues(typeof(TypesOfPriority))*@))
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(p => p.TicketStatusId, "TicketStatus")
+        @Html.DropDownListFor(p => p.TicketStatusId, Model.TicketStatus @*new SelectList(Enum.GetValues(typeof(TypesOfPriority))*@))
     </div>
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default">Create</button>
+            <button type="submit" class="btn btn-default">Save</button>
         </div>
     </div>
 </form>

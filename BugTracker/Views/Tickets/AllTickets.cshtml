@@ -24,7 +24,7 @@
 
 @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Submitter)))
 {
-    @Html.ActionLink("Create Ticket", "CreateTicket")
+    @Html.ActionLink("Create Ticket", "CreateTicket", new { }, new { @class = "btn btn-primary", style = "margin:20px" })
 }
 
 <table id="sample-datatables" class="table table-striped">
@@ -32,6 +32,8 @@
         <tr>
             <th>Title</th>
             <th>Project Name</th>
+            <th>Creator</th>
+            @*<th>Assigned Developer</th>*@
             <th>Type</th>
             <th>Status</th>
             <th>Priority</th>
@@ -42,28 +44,29 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var ticket in Model)
+        @foreach (var Model in Model)
         {
             <tr>
-                <td>@ticket.Title</td>
-                <td>@ticket.Project</td>
-                <td>@ticket.TicketType</td>
-                <td>@ticket.TicketStatus</td>
-                <td>@ticket.TicketPriority</td>
-                <td>@ticket.DateCreated</td>
-                <td>@ticket.DateUpdated</td>
+                <td>@Model.Title</td>
+                <td>@Model.Project</td>
+                <td>@Model.OwnerUser.UserName</td>
+                @*<td>@Model.AssignedToUser</td>*@
+                <td>@Model.TicketType</td>
+                <td>@Model.TicketStatus</td>
+                <td>@Model.TicketPriority</td>
+                <td>@Model.DateCreated</td>
+                <td>@Model.DateUpdated</td>
                 <td>
-                    <a href="@Url.Action("EditTicket", "Ticket", new { id = ticket.TicketId })">
+                    <a href="@Url.Action("EditTicket", "Tickets", new { id = Model.TicketId })">
                         <i title="Edit Ticket" class="fas fa-edit"></i>
                     </a>
                 </td>
                 <td>
-                    <a href="@Url.Action("Details", "Ticket", new { id = ticket.TicketId })">
+                    <a href="@Url.Action("Details", "Tickets", new { id = Model.TicketId })">
                         <i title="User Details" class="fas fa-user-alt"></i>
                     </a>
                 </td>
             </tr>
-
         }
     </tbody>
 </table>

@@ -21,12 +21,15 @@ namespace BugTracker.Models
         [InverseProperty(nameof(Ticket.AssignedToUser))]
         public virtual List<Ticket> AssignedTickets { get; set; }
 
+        public virtual List<TicketComment> AllComments { get; set; }
+
 
         public ApplicationUser()
         {
             Projects = new List<Project>();
             CreatedTickets = new List<Ticket>();
             AssignedTickets = new List<Ticket>();
+            AllComments = new List<TicketComment>();
         }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
@@ -50,6 +53,8 @@ namespace BugTracker.Models
         public DbSet<TicketType> TicketTypes { get; set; }
         public DbSet<TicketPriority> TicketPriorities { get; set; }
         public DbSet<TicketStatus> TicketStatuses { get; set; }
+        public DbSet<TicketComment> AllComments { get; set; }
+
 
         public static ApplicationDbContext Create()
         {
