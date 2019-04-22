@@ -17,5 +17,10 @@ namespace BugTracker.Models.MyHelpers
 
         public List<Ticket> GetAllTickets() => DbContext.Tickets.ToList();
 
+        public Ticket GetTicketById(int id)
+        {
+            return DbContext.Tickets.FirstOrDefault(
+                p => p.Id == id);
+        }
     }
 }

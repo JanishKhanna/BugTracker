@@ -131,10 +131,15 @@
             <li class="nav-item">
                 <details>
                     <summary style="color:rgba(255, 255, 255, 0.5);">Tickets</summary>
-                    <a class="nav-link" href="@Url.Action("AllTickets", "Tickets")">
-                        <span>All Tickets</span>
-                    </a>
-                    <a class="nav-link" href="@Url.Action("Index", "Tickets")">
+                    @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
+                        || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                    {
+
+                        <a class="nav-link" href="@Url.Action("AllTickets", "Tickets")">
+                            <span>All Tickets</span>
+                        </a>
+                    }
+                    <a class="nav-link" href="@Url.Action("MyTickets", "Tickets")">
                         <span>My Tickets</span>
                     </a>
                 </details>

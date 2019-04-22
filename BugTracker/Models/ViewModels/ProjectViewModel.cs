@@ -13,6 +13,6 @@ namespace BugTracker.Models.ViewModels
         public List<ApplicationUser> ApplicationUsers { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
-        //public List<Ticket> Tickets { get; set; }
+        public List<Ticket> Tickets { get; set; }
     }
 }

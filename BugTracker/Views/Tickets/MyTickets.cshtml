@@ -1,7 +1,7 @@
 ﻿@model List<TicketViewModel>
 
 @{
-    ViewBag.Title = "AllTickets";
+    ViewBag.Title = "MyTickets";
 }
 
 @section css {
@@ -20,7 +20,7 @@
     </script>
 }
 
-<h2>All Tickets</h2>
+<h2>MyTickets</h2>
 
 @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Submitter)))
 {
@@ -57,12 +57,9 @@
                 <td>@Model.DateCreated</td>
                 <td>@Model.DateUpdated</td>
                 <td>
-                    @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin)) || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
-                    {
-                        <a href="@Url.Action("EditTicket", "Tickets", new { id = Model.TicketId })">
-                            <i title="Edit Ticket" class="fas fa-edit"></i>
-                        </a>
-                    }
+                    <a href="@Url.Action("EditTicket", "Tickets", new { id = Model.TicketId })">
+                        <i title="Edit Ticket" class="fas fa-edit"></i>
+                    </a>
                 </td>
                 <td>
                     <a href="@Url.Action("Details", "Tickets", new { id = Model.TicketId })">

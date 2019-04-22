@@ -37,7 +37,8 @@ namespace BugTracker.Controllers
                     Name = p.Name,
                     DateCreated = p.DateCreated,
                     DateUpdated = p.DateUpdated,
-                    ApplicationUsers = p.ApplicationUsers                   
+                    ApplicationUsers = p.ApplicationUsers,
+                    Tickets = p.Tickets
                 }).ToList();
 
             return View(viewModel);

@@ -14,7 +14,7 @@ namespace BugTracker.Models.ViewModels
         public string Comment { get; set; }
 
         public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
+        public DateTime? DateUpdated { get; set; }
         public virtual ApplicationUser User { get; set; }
     }
 }
