@@ -30,8 +30,8 @@
     }
     else*@
 
-@if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
-    || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+@if (User.IsInRole(nameof(UserRoles.Admin))
+    || User.IsInRole(nameof(UserRoles.ProjectManager)))
 {
     @Html.ActionLink("Create Project", "CreateProject")
 }

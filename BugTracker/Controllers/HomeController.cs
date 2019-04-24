@@ -28,6 +28,7 @@ namespace BugTracker.Controllers
             return View();
         }
 
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult AllProjects()
         {
             var viewModel = ProjectHelper.GetAllProjects()
@@ -44,6 +45,7 @@ namespace BugTracker.Controllers
             return View(viewModel);
         }
 
+        [Authorize]
         public ActionResult MyProjects()
         {
             var userId = User.Identity.GetUserId();
@@ -54,7 +56,8 @@ namespace BugTracker.Controllers
                     Name = p.Name,
                     DateCreated = p.DateCreated,
                     DateUpdated = p.DateUpdated,
-                    ApplicationUsers = p.ApplicationUsers
+                    ApplicationUsers = p.ApplicationUsers,
+                    Tickets = p.Tickets
                 }).ToList();
 
             return View(viewModel);
@@ -75,14 +78,14 @@ namespace BugTracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject()
         {
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult CreateProject(CreateEditProjectViewModel formData)
         {
             return SaveProject(null, formData);
@@ -131,7 +134,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditProject(int? id)
         {
             if (!id.HasValue)
@@ -152,14 +155,14 @@ namespace BugTracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditProject(int id, CreateEditProjectViewModel formData)
         {
             return SaveProject(id, formData);
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(Roles.Admin))]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult ManageUsers()
         {
             var allUsers = DbContext.Users.ToList();
@@ -185,7 +188,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(Roles.Admin))]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult AddRole(string userId)
         {
             if (userId == null)
@@ -208,7 +211,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(Roles.Admin))]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult AddRole(string roleName, string userId)
         {
             if(userId == null)
@@ -229,7 +232,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(Roles.Admin))]
+        [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult DeleteRole(string roleName, string userId)
         {
             if (userId == null)
@@ -250,7 +253,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditMembers(int? id)
         {
             if (!id.HasValue)
@@ -282,7 +285,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(Roles.Admin) + "," + nameof(Roles.ProjectManager))]
+        [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditMembers(ProjectAssigningViewModel formData)
         {
             var myProject = DbContext.Projects.FirstOrDefault(p => p.Id == formData.ProjectId);

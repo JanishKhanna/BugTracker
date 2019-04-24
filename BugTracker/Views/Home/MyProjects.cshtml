@@ -24,8 +24,8 @@
 }
 
 
-@if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
-    || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+@if (User.IsInRole(nameof(UserRoles.Admin))
+    || User.IsInRole(nameof(UserRoles.ProjectManager)))
 {
     @Html.ActionLink("Create Project", "CreateProject")
 }
@@ -56,12 +56,12 @@ else
                 <tr>
                     <td>@project.Name</td>
                     <td>@project.ApplicationUsers.Count()</td>
-                    <td>0</td>
+                    <td>@project.Tickets.Count</td>
                     <td>@project.DateCreated</td>
                     <td>@project.DateUpdated</td>
                     <td>
-                        @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
-        || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                        @if (User.IsInRole(nameof(UserRoles.Admin))
+        || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
                             <a href="@Url.Action("EditProject", "Home", new { id = project.ProjectId })">
                                 <i title="Edit Project" class="fas fa-edit"></i>
@@ -70,8 +70,8 @@ else
 
                     </td>
                     <td>
-                        @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
-        || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                        @if (User.IsInRole(nameof(UserRoles.Admin))
+        || User.IsInRole(nameof(UserRoles.ProjectManager)))
                         {
                             <a href="@Url.Action("EditMembers", "Home", new { id = project.ProjectId })">
                                 <i title="Edit Members" class="fas fa-user-friends"></i>

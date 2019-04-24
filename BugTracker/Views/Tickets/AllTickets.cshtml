@@ -2,6 +2,8 @@
 
 @{
     ViewBag.Title = "AllTickets";
+    bool isAdminOrManager = User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager));
+    bool isSubmitter = User.IsInRole(nameof(UserRoles.Submitter));
 }
 
 @section css {
@@ -22,7 +24,7 @@
 
 <h2>All Tickets</h2>
 
-@if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Submitter)))
+@if (isSubmitter)
 {
     @Html.ActionLink("Create Ticket", "CreateTicket", new { }, new { @class = "btn btn-primary", style = "margin:20px" })
 }
@@ -33,7 +35,7 @@
             <th>Title</th>
             <th>Project Name</th>
             <th>Creator</th>
-            @*<th>Assigned Developer</th>*@
+            <th>Assigned Developer</th>
             <th>Type</th>
             <th>Status</th>
             <th>Priority</th>
@@ -41,33 +43,43 @@
             <th>Date Updated</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var Model in Model)
+        @foreach (var ticket in Model)
         {
+            bool canEdit = isAdminOrManager || (isSubmitter && User.Identity.Name == ticket.OwnerUser.Email);
             <tr>
-                <td>@Model.Title</td>
-                <td>@Model.Project</td>
-                <td>@Model.OwnerUser.UserName</td>
-                @*<td>@Model.AssignedToUser</td>*@
-                <td>@Model.TicketType</td>
-                <td>@Model.TicketStatus</td>
-                <td>@Model.TicketPriority</td>
-                <td>@Model.DateCreated</td>
-                <td>@Model.DateUpdated</td>
+                <td>@ticket.Title</td>
+                <td>@ticket.Project</td>
+                <td>@ticket.OwnerUser.UserName</td>
+                <td>@(ticket.AssignedToUser?.UserName)</td>
+                <td>@ticket.TicketType</td>
+                <td>@ticket.TicketStatus</td>
+                <td>@ticket.TicketPriority</td>
+                <td>@ticket.DateCreated</td>
+                <td>@ticket.DateUpdated</td>
                 <td>
-                    @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin)) || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                    @if (canEdit)
                     {
-                        <a href="@Url.Action("EditTicket", "Tickets", new { id = Model.TicketId })">
+                        <a href="@Url.Action("EditTicket", "Tickets", new { id = ticket.TicketId })">
                             <i title="Edit Ticket" class="fas fa-edit"></i>
                         </a>
                     }
                 </td>
                 <td>
-                    <a href="@Url.Action("Details", "Tickets", new { id = Model.TicketId })">
+                    <a href="@Url.Action("Details", "Tickets", new { id = ticket.TicketId })">
                         <i title="User Details" class="fas fa-user-alt"></i>
                     </a>
+                </td>
+                <td>
+                    @if (isAdminOrManager)
+                    {
+                        <a href="@Url.Action("AssignTickets", "Tickets", new { id = ticket.TicketId})">
+                            <i title="Assign Tickets" class="fas fa-user-check"></i>
+                        </a>
+                    }
                 </td>
             </tr>
         }

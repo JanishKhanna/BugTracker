@@ -23,13 +23,13 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(p => p.TicketType, "TicketType")
-        @Html.DropDownListFor(p => p.TicketType, new SelectList(Enum.GetValues(typeof(TypesOfTicket))))
+        @Html.LabelFor(p => p.TicketTypeId, "TicketType")
+        @Html.DropDownListFor(p => p.TicketTypeId, Model.TicketType @*new SelectList(Enum.GetValues(typeof(TypesOfTicket)))*@)
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(p => p.TicketPriority, "TicketPriority")
-        @Html.DropDownListFor(p => p.TicketPriority, new SelectList(Enum.GetValues(typeof(TypesOfPriority))))
+        @Html.LabelFor(p => p.TicketPriorityId, "TicketPriority")
+        @Html.DropDownListFor(p => p.TicketPriorityId, Model.TicketPriority @*new SelectList(Enum.GetValues(typeof(TypesOfPriority))*@))
     </div>
 
     <div class="form-group">

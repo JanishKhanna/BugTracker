@@ -35,27 +35,27 @@ namespace BugTracker.Migrations
 
             //var ticketTypeManager = new 
 
-            if (!context.Roles.Any(p => p.Name == nameof(Roles.Admin)))
+            if (!context.Roles.Any(p => p.Name == nameof(UserRoles.Admin)))
             {
-                var adminRole = new IdentityRole(nameof(Roles.Admin));
+                var adminRole = new IdentityRole(nameof(UserRoles.Admin));
                 roleManager.Create(adminRole);
             }
 
-            if (!context.Roles.Any(p => p.Name == nameof(Roles.ProjectManager)))
+            if (!context.Roles.Any(p => p.Name == nameof(UserRoles.ProjectManager)))
             {
-                var projectManagerRole = new IdentityRole(nameof(Roles.ProjectManager));
+                var projectManagerRole = new IdentityRole(nameof(UserRoles.ProjectManager));
                 roleManager.Create(projectManagerRole);
             }
 
-            if(!context.Roles.Any(p => p.Name == nameof(Roles.Developer)))
+            if(!context.Roles.Any(p => p.Name == nameof(UserRoles.Developer)))
             {
-                var developerRole = new IdentityRole(nameof(Roles.Developer));
+                var developerRole = new IdentityRole(nameof(UserRoles.Developer));
                 roleManager.Create(developerRole);
             }
 
-            if(!context.Roles.Any(p => p.Name == nameof(Roles.Submitter)))
+            if(!context.Roles.Any(p => p.Name == nameof(UserRoles.Submitter)))
             {
-                var submitterRole = new IdentityRole(nameof(Roles.Submitter));
+                var submitterRole = new IdentityRole(nameof(UserRoles.Submitter));
                 roleManager.Create(submitterRole);
             }
 
@@ -149,9 +149,9 @@ namespace BugTracker.Migrations
                 adminUser = context.Users.First(p => p.UserName == "admin@mybugtracker.com");
             }
 
-            if(!userManager.IsInRole(adminUser.Id, nameof(Roles.Admin)))
+            if(!userManager.IsInRole(adminUser.Id, nameof(UserRoles.Admin)))
             {
-                userManager.AddToRole(adminUser.Id, nameof(Roles.Admin));
+                userManager.AddToRole(adminUser.Id, nameof(UserRoles.Admin));
             }
 
             context.SaveChanges();

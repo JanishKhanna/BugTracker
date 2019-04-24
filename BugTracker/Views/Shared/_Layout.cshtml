@@ -99,7 +99,7 @@
                 </div>
             </li>
 
-            @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin)))
+            @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.UserRoles.Admin)))
             {
                 <li class="nav-item">
                     <a class="nav-link" href="@Url.Action("ManageUsers", "Home")">
@@ -109,8 +109,8 @@
                 </li>
             }
 
-            @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
-                || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+            @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.UserRoles.Admin))
+                || User.IsInRole(nameof(BugTracker.Models.MyHelpers.UserRoles.ProjectManager)))
             {
                 <li class="nav-item">
                     <a class="nav-link" href="@Url.Action("AllProjects", "Home")">
@@ -131,8 +131,8 @@
             <li class="nav-item">
                 <details>
                     <summary style="color:rgba(255, 255, 255, 0.5);">Tickets</summary>
-                    @if (User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.Admin))
-                        || User.IsInRole(nameof(BugTracker.Models.MyHelpers.Roles.ProjectManager)))
+                    @if (User.IsInRole(nameof(UserRoles.Admin))
+                        || User.IsInRole(nameof(UserRoles.ProjectManager)))
                     {
 
                         <a class="nav-link" href="@Url.Action("AllTickets", "Tickets")">

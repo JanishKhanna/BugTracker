@@ -5,7 +5,7 @@ using System.Web;
 
 namespace BugTracker.Models.MyHelpers
 {
-    public enum Roles
+    public enum UserRoles
     {
         Admin,
         ProjectManager,

@@ -193,13 +193,14 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MyHelpers\ProjectHelper.cs" />
-    <Compile Include="Models\MyHelpers\Roles.cs" />
+    <Compile Include="Models\MyHelpers\UserRoles.cs" />
     <Compile Include="Models\MyHelpers\TicketHelper.cs" />
     <Compile Include="Models\MyHelpers\TypesOfPriority.cs" />
     <Compile Include="Models\MyHelpers\TypesOfStatus.cs" />
     <Compile Include="Models\MyHelpers\TypesOfTicket.cs" />
     <Compile Include="Models\MyHelpers\UserRolesHelper.cs" />
     <Compile Include="Models\ViewModels\AddRoleViewModel.cs" />
+    <Compile Include="Models\ViewModels\AssignTicketViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateCommentViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateEditProjectViewModel.cs" />
@@ -2018,6 +2019,7 @@
     <Content Include="Views\Tickets\Details.cshtml" />
     <Content Include="Views\Tickets\CreateComments.cshtml" />
     <Content Include="Views\Tickets\MyTickets.cshtml" />
+    <Content Include="Views\Tickets\AssignTickets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
