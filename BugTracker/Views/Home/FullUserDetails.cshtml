@@ -1,0 +1,168 @@
+﻿@model DashBoardViewModel
+
+@{
+    ViewBag.Title = "FullUserDetails";
+
+    bool isAdminOrManager = User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager));
+    bool isDeveloper = User.IsInRole(nameof(UserRoles.Developer));
+    bool isSubmitter = User.IsInRole(nameof(UserRoles.Submitter));
+}
+
+<h2>Dashboard</h2>
+
+<h3>Full User Details</h3>
+
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <!-- Breadcrumbs-->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Index", "Home")">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active">Overview</li>
+            </ol>
+            <!-- Icon Cards-->
+            <div class="row">
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-primary o-hidden h-100">
+                        @if (isAdminOrManager)
+                        {
+                            <div class="card-body">
+                                <div class="card-body-icon">
+                                    <i class="fas fa-fw fa-comments"></i>
+                                </div>
+                                <div class="mr-5">All Projects : @Model.Projects</div>
+                            </div>
+                            <a class="card-footer text-white clearfix small z-1" href="@Url.Action("AllProjects", "Home")">
+                                <span class="float-left">View Details</span>
+                                <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                                </span>
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="card-body">
+                                <div class="card-body-icon">
+                                    <i class="fas fa-fw fa-comments"></i>
+                                </div>
+                                <div class="mr-5">My Projects : @Model.Projects</div>
+                            </div>
+                            <a class="card-footer text-white clearfix small z-1" href="@Url.Action("MyProjects", "Home")">
+                                <span class="float-left">View Details</span>
+                                <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                                </span>
+                            </a>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xl-3 col-sm-6 mb-3">
+                    <div class="card text-white bg-primary o-hidden h-100">
+                        @if (isAdminOrManager)
+                        {
+                            <div class="card-body">
+                                <div class="card-body-icon">
+                                    <i class="fas fa-fw fa-comments"></i>
+                                </div>
+                                <div class="mr-5">Total Tickets : @Model.Tickets</div>
+                            </div>
+                        }
+                        else if (isSubmitter)
+                        {
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-comments"></i>
+                            </div>
+                            <div class="mr-5">Tickets Created : @Model.Tickets</div>
+                        </div>
+                        }
+                        else if (isDeveloper)
+                        {
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-comments"></i>
+                            </div>
+                            <div class="mr-5"> Tickets Assigned : @Model.Tickets</div>
+                        </div>
+                        }
+                        @if (isAdminOrManager)
+                        {
+                            <a class="card-footer text-white clearfix small z-1" href="@Url.Action("AllTickets", "Tickets")">
+                                <span class="float-left">View Details</span>
+                                <span class="float-right">
+                                    <i class="fas fa-angle-right"></i>
+                                </span>
+                            </a>
+                        }                        
+                    </div>
+                </div>
+            </div>
+            @if (isAdminOrManager)
+            {
+                <div class="row">
+                    <div class="col-xl-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-primary o-hidden h-100">
+                            <div class="card-body">
+                                <div class="card-body-icon">
+                                    <i class="fas fa-fw fa-comments"></i>
+                                </div>
+                                <div class="mr-5">Open Tickets @Model.OpenTickets</div>
+                            </div>
+                            @*<a class="card-footer text-white clearfix small z-1" href="@Url.Action("MyTickets", "Tickets")">
+                                    <span class="float-left">View Details</span>
+                                    <span class="float-right">
+                                        <i class="fas fa-angle-right"></i>
+                                    </span>
+                                </a>*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-primary o-hidden h-100">
+                            <div class="card-body">
+                                <div class="card-body-icon">
+                                    <i class="fas fa-fw fa-comments"></i>
+                                </div>
+                                <div class="mr-5">Resolved Tickets @Model.ResolvedTickets</div>
+                            </div>
+                            @*<a class="card-footer text-white clearfix small z-1" href="@Url.Action("MyTickets", "Tickets")">
+                                    <span class="float-left">View Details</span>
+                                    <span class="float-right">
+                                        <i class="fas fa-angle-right"></i>
+                                    </span>
+                                </a>*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-primary o-hidden h-100">
+                            <div class="card-body">
+                                <div class="card-body-icon">
+                                    <i class="fas fa-fw fa-comments"></i>
+                                </div>
+                                <div class="mr-5">Rejected Tickets @Model.RejectedTickets</div>
+                            </div>
+                            @*<a class="card-footer text-white clearfix small z-1" href="@Url.Action("MyTickets", "Tickets")">
+                                    <span class="float-left">View Details</span>
+                                    <span class="float-right">
+                                        <i class="fas fa-angle-right"></i>
+                                    </span>
+                                </a>*@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

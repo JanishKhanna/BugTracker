@@ -2,6 +2,11 @@
 
 @{
     ViewBag.Title = "MyTickets";
+    
+    string userEmail = User.Identity.Name;
+    bool isAdminOrManager = User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager));
+    bool isSubmitter = User.IsInRole(nameof(UserRoles.Submitter));
+    bool isDeveloper = User.IsInRole(nameof(UserRoles.Developer));
 }
 
 @section css {
@@ -22,7 +27,7 @@
 
 <h2>MyTickets</h2>
 
-@if (User.IsInRole(nameof(UserRoles.Submitter)))
+@if (isSubmitter)
 {
     @Html.ActionLink("Create Ticket", "CreateTicket", new { }, new { @class = "btn btn-primary", style = "margin:20px" })
 }
@@ -44,28 +49,29 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var Model in Model)
+        @foreach (var ticket in Model)
         {
+            bool canEdit = isAdminOrManager || (isSubmitter && userEmail == ticket.OwnerUser.Email) || (ticket.AssignedToUser != null && isDeveloper && userEmail == ticket.AssignedToUser.Email);
             <tr>
-                <td>@Model.Title</td>
-                <td>@Model.Project</td>
-                <td>@Model.OwnerUser.UserName</td>
-                <td>@(Model.AssignedToUser?.UserName)</td>
-                <td>@Model.TicketType</td>
-                <td>@Model.TicketStatus</td>
-                <td>@Model.TicketPriority</td>
-                <td>@Model.DateCreated</td>
-                <td>@Model.DateUpdated</td>
+                <td>@ticket.Title</td>
+                <td>@ticket.Project</td>
+                <td>@ticket.OwnerUser.UserName</td>
+                <td>@(ticket.AssignedToUser?.UserName)</td>
+                <td>@ticket.TicketType</td>
+                <td>@ticket.TicketStatus</td>
+                <td>@ticket.TicketPriority</td>
+                <td>@ticket.DateCreated</td>
+                <td>@ticket.DateUpdated</td>
                 <td>
-                    @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                    @if (canEdit)
                     {
-                        <a href="@Url.Action("EditTicket", "Tickets", new { id = Model.TicketId })">
+                        <a href="@Url.Action("EditTicket", "Tickets", new { id = ticket.TicketId })">
                             <i title="Edit Ticket" class="fas fa-edit"></i>
                         </a>
                     }
                 </td>
                 <td>
-                    <a href="@Url.Action("Details", "Tickets", new { id = Model.TicketId })">
+                    <a href="@Url.Action("Details", "Tickets", new { id = ticket.TicketId })">
                         <i title="User Details" class="fas fa-user-alt"></i>
                     </a>
                 </td>

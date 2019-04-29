@@ -23,9 +23,61 @@ namespace BugTracker.Controllers
             ProjectHelper = new ProjectHelper(DbContext);
         }
 
+        [Authorize]
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(HomeController.FullUserDetails));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult FullUserDetails()
+        {
+            var userId = User.Identity.GetUserId();
+            var myUser = DbContext.Users.FirstOrDefault(p => userId == p.Id);
+            bool isAdminOrManager = User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager));
+            bool isSubmitter = User.IsInRole(nameof(UserRoles.Submitter));
+            bool isDeveloper = User.IsInRole(nameof(UserRoles.Developer));
+            string userEmail = myUser.Email;
+
+            int myProjects;
+            int myTickets;
+
+            if (isAdminOrManager)
+            {
+                myProjects = DbContext.Projects.Count();
+                myTickets = DbContext.Tickets.Count();
+            }
+            else if (isDeveloper || isSubmitter)
+            {
+                myTickets = DbContext.Tickets.ToList()
+                            .Where(myTicket => (isSubmitter && userEmail == myTicket.OwnerUser.Email) || (myTicket.AssignedToUser != null && isDeveloper && userEmail == myTicket.AssignedToUser.Email))
+                            .Count();
+                myProjects = myUser.Projects.Count;
+            }            
+            else
+            {
+                throw new Exception("Unexpected Role");
+            }
+
+            var opentickets = DbContext.Tickets
+                                .Where(p => p.TicketStatus.Name == TypesOfStatus.Open.ToString()).Count();
+            var resolvedTickets = DbContext.Tickets
+                                    .Where(p => p.TicketStatus.Name == TypesOfStatus.Resolved.ToString())
+                                    .Count();
+            var rejectedTickets = DbContext.Tickets
+                                    .Where(p => p.TicketStatus.Name == TypesOfStatus.Rejected.ToString())
+                                    .Count();
+            var viewModel = new DashBoardViewModel()
+            {
+                Projects = myProjects,
+                Tickets = myTickets,
+                OpenTickets = opentickets,
+                ResolvedTickets = resolvedTickets,
+                RejectedTickets = rejectedTickets
+            };
+
+            return View(viewModel);
         }
 
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
@@ -61,20 +113,6 @@ namespace BugTracker.Controllers
                 }).ToList();
 
             return View(viewModel);
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
         }
 
         [HttpGet]
@@ -214,7 +252,7 @@ namespace BugTracker.Controllers
         [Authorize(Roles = nameof(UserRoles.Admin))]
         public ActionResult AddRole(string roleName, string userId)
         {
-            if(userId == null)
+            if (userId == null)
             {
                 RedirectToAction(nameof(HomeController.Index));
             }

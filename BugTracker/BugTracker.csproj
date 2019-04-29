@@ -205,6 +205,7 @@
     <Compile Include="Models\ViewModels\CreateCommentViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateEditProjectViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateEditTicketViewModel.cs" />
+    <Compile Include="Models\ViewModels\DashBoardViewModel.cs" />
     <Compile Include="Models\ViewModels\EditDisplayNameViewModel.cs" />
     <Compile Include="Models\ViewModels\ManageUsersViewModel.cs" />
     <Compile Include="Models\ViewModels\ProjectAssigningViewModel.cs" />
@@ -2020,6 +2021,8 @@
     <Content Include="Views\Tickets\CreateComments.cshtml" />
     <Content Include="Views\Tickets\MyTickets.cshtml" />
     <Content Include="Views\Tickets\AssignTickets.cshtml" />
+    <Content Include="Views\Tickets\EditComment.cshtml" />
+    <Content Include="Views\Home\FullUserDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

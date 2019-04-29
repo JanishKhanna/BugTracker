@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "AllTickets";
-    bool isAdminOrManager = User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager));
+
     bool isSubmitter = User.IsInRole(nameof(UserRoles.Submitter));
 }
 
@@ -49,7 +49,6 @@
     <tbody>
         @foreach (var ticket in Model)
         {
-            bool canEdit = isAdminOrManager || (isSubmitter && User.Identity.Name == ticket.OwnerUser.Email);
             <tr>
                 <td>@ticket.Title</td>
                 <td>@ticket.Project</td>
@@ -61,12 +60,9 @@
                 <td>@ticket.DateCreated</td>
                 <td>@ticket.DateUpdated</td>
                 <td>
-                    @if (canEdit)
-                    {
-                        <a href="@Url.Action("EditTicket", "Tickets", new { id = ticket.TicketId })">
-                            <i title="Edit Ticket" class="fas fa-edit"></i>
-                        </a>
-                    }
+                    <a href="@Url.Action("EditTicket", "Tickets", new { id = ticket.TicketId })">
+                        <i title="Edit Ticket" class="fas fa-edit"></i>
+                    </a>
                 </td>
                 <td>
                     <a href="@Url.Action("Details", "Tickets", new { id = ticket.TicketId })">
@@ -74,12 +70,9 @@
                     </a>
                 </td>
                 <td>
-                    @if (isAdminOrManager)
-                    {
-                        <a href="@Url.Action("AssignTickets", "Tickets", new { id = ticket.TicketId})">
-                            <i title="Assign Tickets" class="fas fa-user-check"></i>
-                        </a>
-                    }
+                    <a href="@Url.Action("AssignTickets", "Tickets", new { id = ticket.TicketId})">
+                        <i title="Assign Tickets" class="fas fa-user-check"></i>
+                    </a>
                 </td>
             </tr>
         }

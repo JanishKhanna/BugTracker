@@ -120,32 +120,37 @@
                 </li>
             }
 
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("MyProjects", "Home")">
-                    @*<i class="fas fa-fw fa-chart-area"></i>*@
-                    <span>My Projects</span>
-                </a>
-            </li>
-
-
-            <li class="nav-item">
-                <details>
-                    <summary style="color:rgba(255, 255, 255, 0.5);">Tickets</summary>
-                    @if (User.IsInRole(nameof(UserRoles.Admin))
-                        || User.IsInRole(nameof(UserRoles.ProjectManager)))
-                    {
-
-                        <a class="nav-link" href="@Url.Action("AllTickets", "Tickets")">
-                            <span>All Tickets</span>
-                        </a>
-                    }
-                    <a class="nav-link" href="@Url.Action("MyTickets", "Tickets")">
-                        <span>My Tickets</span>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("MyProjects", "Home")">
+                        @*<i class="fas fa-fw fa-chart-area"></i>*@
+                        <span>My Projects</span>
                     </a>
-                </details>
-                @*<i class="fas fa-fw fa-table"></i>*@
+                </li>
+            }
 
-            </li>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li class="nav-item">
+                    <details>
+                        <summary style="color:rgba(255, 255, 255, 0.5);">Tickets</summary>
+                        @if (User.IsInRole(nameof(UserRoles.Admin))
+                            || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+
+                            <a class="nav-link" href="@Url.Action("AllTickets", "Tickets")">
+                                <span>All Tickets</span>
+                            </a>
+                        }
+                        <a class="nav-link" href="@Url.Action("MyTickets", "Tickets")">
+                            <span>My Tickets</span>
+                        </a>
+                    </details>
+                    @*<i class="fas fa-fw fa-table"></i>*@
+
+                </li>
+            }
         </ul>
         <div class="container body-content">
             @RenderBody()

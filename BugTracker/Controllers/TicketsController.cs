@@ -46,10 +46,10 @@ namespace BugTracker.Controllers
                 }).ToList();
 
             return View(viewModel);
-        }   
-        
+        }
+
         private bool CanEdit(string userId, Ticket myTicket)
-        {            
+        {
             var myCurrentUser = DbContext.Users.FirstOrDefault(p => p.Id == userId);
 
             if (myCurrentUser == null)
@@ -69,7 +69,7 @@ namespace BugTracker.Controllers
         private bool CanView(string userId, Ticket myTicket)
         {
             var user = DbContext.Users.FirstOrDefault(p => p.Id == userId);
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
@@ -88,9 +88,13 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-            
+
+            bool isSubmitter = User.IsInRole(nameof(UserRoles.Submitter));
+            bool isDeveloper = User.IsInRole(nameof(UserRoles.Developer));
+            string userEmail = myCurrentUser.Email;
+
             var viewModel = DbContext.Tickets.ToList()
-                            .Where(myTicket => CanView(userId, myTicket))
+                            .Where(myTicket => (isSubmitter && userEmail == myTicket.OwnerUser.Email) || (myTicket.AssignedToUser != null && isDeveloper && userEmail == myTicket.AssignedToUser.Email) || myCurrentUser.Projects.Any(p => p.Id == myTicket.ProjectId))
                             .Select(p => new TicketViewModel
                             {
                                 Project = p.Project.Name,
@@ -101,9 +105,9 @@ namespace BugTracker.Controllers
                                 DateUpdated = p.DateUpdated,
                                 OwnerUser = p.OwnerUser,
                                 AssignedToUser = p?.AssignedToUser,
-                                TicketType = DbContext.TicketTypes.FirstOrDefault(type => type.Id ==                 p.TicketTypeId).Name,
-                                TicketPriority = DbContext.TicketPriorities.FirstOrDefault(priority                  => priority.Id == p.TicketPriorityId).Name,
-                                TicketStatus = DbContext.TicketStatuses.FirstOrDefault(status =>                     status.Id == p.TicketStatusId).Name
+                                TicketType = DbContext.TicketTypes.FirstOrDefault(type => type.Id == p.TicketTypeId).Name,
+                                TicketPriority = DbContext.TicketPriorities.FirstOrDefault(priority => priority.Id == p.TicketPriorityId).Name,
+                                TicketStatus = DbContext.TicketStatuses.FirstOrDefault(status => status.Id == p.TicketStatusId).Name
                             }).ToList();
 
             return View(viewModel);
@@ -150,7 +154,7 @@ namespace BugTracker.Controllers
                 var ticketPrioritySelectList = new SelectList(DbContext.TicketPriorities, nameof(TicketPriority.Id), nameof(TicketPriority.Name));
                 var ticketStatusSelectList = new SelectList(DbContext.TicketStatuses, nameof(TicketStatus.Id), nameof(TicketStatus.Name));
                 var viewModel = new CreateEditTicketViewModel
-                {   
+                {
                     Projects = projectSelectList,
                     TicketType = ticketTypeSelectList,
                     TicketPriority = ticketPrioritySelectList,
@@ -181,7 +185,7 @@ namespace BugTracker.Controllers
                                 .First(p => p.Id == formData.ProjectId),
                     DateCreated = DateTime.Now,
                     OwnerUser = DbContext.Users
-                                    .First(p => p.Id == userId),                                   
+                                    .First(p => p.Id == userId),
                 };
 
                 formData.TicketStatusId = DbContext.TicketStatuses
@@ -228,14 +232,14 @@ namespace BugTracker.Controllers
             }
 
             var userId = User.Identity.GetUserId();
-            
+
             if (!CanEdit(userId, myTicket))
             {
                 return RedirectToAction(nameof(TicketsController.MyTickets));
             }
 
             var helper = new ProjectHelper(DbContext);
-            
+
             var ticketTypeSelectList = new SelectList(DbContext.TicketTypes, nameof(TicketType.Id), nameof(TicketType.Name));
             var ticketPrioritySelectList = new SelectList(DbContext.TicketPriorities, nameof(TicketPriority.Id), nameof(TicketPriority.Name));
             var ticketStatusSelectList = new SelectList(DbContext.TicketStatuses, nameof(TicketStatus.Id), nameof(TicketStatus.Name));
@@ -266,9 +270,9 @@ namespace BugTracker.Controllers
 
             if (myTicket == null)
             {
-                return RedirectToAction(nameof(TicketsController.AllTickets));
+                return RedirectToAction(nameof(TicketsController.MyTickets));
             }
-            
+
             var userId = User.Identity.GetUserId();
 
             if (!CanEdit(userId, myTicket))
@@ -283,30 +287,30 @@ namespace BugTracker.Controllers
         [Authorize]
         public ActionResult Details(int? id)
         {
-            var myticket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
 
             if (!id.HasValue)
             {
-                return RedirectToAction(nameof(TicketsController.AllTickets));
+                return RedirectToAction(nameof(TicketsController.MyTickets));
             }
 
-            if (myticket == null)
+            if (myTicket == null)
             {
-                return RedirectToAction(nameof(TicketsController.AllTickets));
+                return RedirectToAction(nameof(TicketsController.MyTickets));
             }
 
             var viewModel = new TicketDetailsViewModel
             {
-                TicketId = myticket.Id,
-                Title = myticket.Title,
-                Description = myticket.Description,
-                ProjectName = myticket.Project.Name,
-                TypesOfTicket = myticket.TicketType.Name,
-                TypesOfStatus = myticket.TicketStatus.Name,
-                TypesOfPriority = myticket.TicketPriority.Name,
-                DateCreated = myticket.DateCreated,
-                DateUpdated = myticket.DateUpdated,
-                AllComments = myticket.TicketComments.Select(p => new CommentViewModel()
+                TicketId = myTicket.Id,
+                Title = myTicket.Title,
+                Description = myTicket.Description,
+                ProjectName = myTicket.Project.Name,
+                TypesOfTicket = myTicket.TicketType.Name,
+                TypesOfStatus = myTicket.TicketStatus.Name,
+                TypesOfPriority = myTicket.TicketPriority.Name,
+                DateCreated = myTicket.DateCreated,
+                DateUpdated = myTicket.DateUpdated,
+                AllComments = myTicket.TicketComments.Select(p => new CommentViewModel()
                 {
                     CommentId = p.Id,
                     Comment = p.Comment,
@@ -336,7 +340,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(TicketsController.MyTickets));
             }
 
-            var userId = User.Identity.GetUserId();            
+            var userId = User.Identity.GetUserId();
 
             if (!CanEdit(userId, myTicket))
             {
@@ -376,7 +380,7 @@ namespace BugTracker.Controllers
         private ActionResult SaveComments(int? id, CreateCommentViewModel formData, int ticketId)
         {
             if (!ModelState.IsValid)
-            {                
+            {
                 return View(formData);
             }
 
@@ -415,9 +419,72 @@ namespace BugTracker.Controllers
             myComment.DateUpdated = DateTime.Now;
 
             DbContext.SaveChanges();
-            return RedirectToAction(nameof(TicketsController.Details), new { id = ticketId});
+            return RedirectToAction(nameof(TicketsController.Details), new { id = ticketId });
         }
-        
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult EditComment(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction(nameof(TicketsController.Details));
+            }
+
+            var userId = User.Identity.GetUserId();
+
+            var myComment = DbContext.AllComments
+                .FirstOrDefault(p => p.Id == id);
+
+            if (myComment == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
+            var model = new CreateCommentViewModel();
+            model.Comment = myComment.Comment;
+            model.DateUpdated = myComment.DateUpdated;
+
+            DbContext.SaveChanges();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult EditComment(int id, CreateCommentViewModel formData)
+        {
+            return SaveComments(id, formData, formData.TicketId);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult DeleteComment(int? id, int? ticketId)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction(nameof(TicketsController.MyTickets));
+            }
+
+            var userId = User.Identity.GetUserId();
+
+            var myComment = DbContext.AllComments
+                .FirstOrDefault(p => p.Id == id);
+
+            if (myComment != null)
+            {
+                DbContext.AllComments.Remove(myComment);
+                DbContext.SaveChanges();
+            }
+
+            if (ticketId == null)
+            {
+                return RedirectToAction(nameof(TicketsController.MyTickets));
+            }
+
+            return RedirectToAction(nameof(TicketsController.Details), new { id = ticketId });
+        }
+
         [HttpGet]
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult AssignTickets(int? id)
@@ -436,7 +503,7 @@ namespace BugTracker.Controllers
 
             var helper = new UserRolesHelper(DbContext);
             var developer = helper.UsersInRole(nameof(UserRoles.Developer)).ToList();
-            var developerList = new SelectList(developer, nameof(ApplicationUser.Id), nameof(ApplicationUser.UserName));            
+            var developerList = new SelectList(developer, nameof(ApplicationUser.Id), nameof(ApplicationUser.UserName));
 
             var viewModel = new AssignTicketViewModel
             {
@@ -460,10 +527,10 @@ namespace BugTracker.Controllers
             }
 
             myTicket.AssignedToUserId = formData.DeveloperId;
-            
+
             DbContext.SaveChanges();
 
             return RedirectToAction(nameof(TicketsController.AllTickets));
-        }
+        }        
     }
 }

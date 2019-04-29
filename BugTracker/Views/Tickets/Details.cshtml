@@ -1,6 +1,8 @@
 ﻿@model TicketDetailsViewModel
 
 @{
+    /**/
+
     ViewBag.Title = "Details";
 }
 
@@ -59,35 +61,46 @@
 
                             @foreach (var comment in Model.AllComments)
                             {
-                                //if ((User.IsInRole("Admin")))
                                 {
                                     <div class="panel-body">
                                         <ul class="list-unstyled">
                                             <li>
                                                 <div class="well well-sm">
                                                     <div class="header">
-                                                        <strong>@(comment.User?.DisplayName)</strong>
+                                                        <strong>
+                                                            @(comment.User?.DisplayName)
+                                                        </strong>
                                                         <small class="pull-right text-muted">
-                                                            <span>Posted: @comment.DateCreated</span>
-                                                            <span>Updated: @comment.DateUpdated</span>
+                                                            <span>
+                                                                Posted: @comment.DateCreated
+                                                            </span>
+                                                            <span>
+                                                                Updated: @comment.DateUpdated
+                                                            </span>
                                                         </small>
                                                     </div>
                                                     <p>@comment.Comment</p>
                                                 </div>
+
+                                                <div style="display: flex; flex-flow:row; justify-content:space-between; width:100px;">
+                                                    <span>
+                                                        @Html.ActionLink("Edit", "EditComment", new                                 { id = comment.CommentId })
+                                                    </span>
+                                                    <form method="post"
+                                                          action="@Url.Action("DeleteComment",      "Tickets", new { id = comment.CommentId, ticketId = Model.TicketId })">
+                                                        <button style="background:none; border:none; color:deeppink" class="btn-delete">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </li>
                                         </ul>
-
-                                        
-                                        
-                                        
                                     </div>
                                 }
                             }
                         </td>
                         <td>
-                            @*<a href="@Url.Action("Details", "Tickets", new { id = Model.TicketId })">
-                                    <i title="User Details" class="fas fa-user-alt"></i>
-                                </a>*@
+                            @* histories *@
                         </td>
                     </tr>
 
