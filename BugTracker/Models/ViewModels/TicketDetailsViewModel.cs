@@ -1,4 +1,5 @@
-﻿using BugTracker.Models.MyHelpers;
+﻿using BugTracker.Models.Domain;
+using BugTracker.Models.MyHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace BugTracker.Models.ViewModels
         public virtual ApplicationUser AssignedToUser { get; set; }
         public string AssignedToUserId { get; set; }
 
-        public List<CommentViewModel> AllComments { get; set; }        
+        public List<CommentViewModel> AllComments { get; set; }    
+        public List<TicketHistoryViewModel> TicketHistories { get; set; }
     }
 }

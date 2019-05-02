@@ -23,6 +23,7 @@ namespace BugTracker.Models
 
         public virtual List<TicketComment> AllComments { get; set; }
 
+        public List<TicketHistory> TicketHistories { get; set; }
 
         public ApplicationUser()
         {
@@ -54,7 +55,7 @@ namespace BugTracker.Models
         public DbSet<TicketPriority> TicketPriorities { get; set; }
         public DbSet<TicketStatus> TicketStatuses { get; set; }
         public DbSet<TicketComment> AllComments { get; set; }
-
+        public DbSet<TicketHistory> TicketHistories { get; set; }
 
         public static ApplicationDbContext Create()
         {

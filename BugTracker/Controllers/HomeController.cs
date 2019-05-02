@@ -4,6 +4,7 @@ using BugTracker.Models.MyHelpers;
 using BugTracker.Models.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,12 @@ namespace BugTracker.Controllers
     {
         private ApplicationDbContext DbContext;
         private ProjectHelper ProjectHelper;
-
+        private ApplicationUserManager UserManager;        
+     
         public HomeController()
         {
             DbContext = new ApplicationDbContext();
-            ProjectHelper = new ProjectHelper(DbContext);
+            ProjectHelper = new ProjectHelper(DbContext);            
         }
 
         [Authorize]
@@ -54,7 +56,7 @@ namespace BugTracker.Controllers
                             .Where(myTicket => (isSubmitter && userEmail == myTicket.OwnerUser.Email) || (myTicket.AssignedToUser != null && isDeveloper && userEmail == myTicket.AssignedToUser.Email))
                             .Count();
                 myProjects = myUser.Projects.Count;
-            }            
+            }
             else
             {
                 throw new Exception("Unexpected Role");
@@ -352,6 +354,6 @@ namespace BugTracker.Controllers
 
             DbContext.SaveChanges();
             return RedirectToAction("Index");
-        }
+        }        
     }
 }

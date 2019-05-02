@@ -21,6 +21,7 @@ namespace BugTracker.Migrations
 
         protected override void Seed(BugTracker.Models.ApplicationDbContext context)
         {
+            //System.Diagnostics.Debugger.Launch();
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
@@ -152,6 +153,94 @@ namespace BugTracker.Migrations
             if(!userManager.IsInRole(adminUser.Id, nameof(UserRoles.Admin)))
             {
                 userManager.AddToRole(adminUser.Id, nameof(UserRoles.Admin));
+            }
+
+            ApplicationUser admin;
+
+            if (!context.Users.Any(p => p.UserName == "newadmin@mybugtracker.com"))
+            {
+                admin = new ApplicationUser();
+                admin.UserName = "newadmin@mybugtracker.com";
+                admin.Email = "newadmin@mybugtracker.com";
+                admin.EmailConfirmed = true; //To Test Email if Confirmed or not.
+                admin.DisplayName = "The Admin";
+
+                userManager.Create(admin, "Password-1");
+            }
+            else
+            {
+                admin = context.Users.First(p => p.UserName == "newadmin@mybugtracker.com");
+            }
+
+            if (!userManager.IsInRole(admin.Id, nameof(UserRoles.Admin)))
+            {
+                userManager.AddToRole(admin.Id, nameof(UserRoles.Admin));
+            }
+
+            ApplicationUser projectManager;
+
+            if (!context.Users.Any(p => p.UserName == "projectManager@mybugtracker.com"))
+            {
+                projectManager = new ApplicationUser();
+                projectManager.UserName = "projectManager@mybugtracker.com";
+                projectManager.Email = "projectManager@mybugtracker.com";
+                projectManager.EmailConfirmed = true; //To Test Email if Confirmed or not.
+                projectManager.DisplayName = "The Project Manager";
+
+                userManager.Create(projectManager, "Password-1");
+            }
+            else
+            {
+                projectManager = context.Users.First(p => p.UserName == "projectManager@mybugtracker.com");
+            }
+
+            if (!userManager.IsInRole(projectManager.Id, nameof(UserRoles.ProjectManager)))
+            {
+                userManager.AddToRole(projectManager.Id, nameof(UserRoles.ProjectManager));
+            }
+
+            ApplicationUser developer;
+
+            if (!context.Users.Any(p => p.UserName == "developer@mybugtracker.com"))
+            {
+                developer = new ApplicationUser();
+                developer.UserName = "developer@mybugtracker.com";
+                developer.Email = "developer@mybugtracker.com";
+                developer.EmailConfirmed = true; //To Test Email if Confirmed or not.
+                developer.DisplayName = "The Developer";
+
+                userManager.Create(developer, "Password-1");
+            }
+            else
+            {
+                developer = context.Users.First(p => p.UserName == "developer@mybugtracker.com");
+            }
+
+            if (!userManager.IsInRole(developer.Id, nameof(UserRoles.Developer)))
+            {
+                userManager.AddToRole(developer.Id, nameof(UserRoles.Developer));
+            }
+
+            ApplicationUser submitter;
+
+            if (!context.Users.Any(p => p.UserName == "submitter@mybugtracker.com"))
+            {
+                submitter = new ApplicationUser();
+                submitter.UserName = "submitter@mybugtracker.com";
+                submitter.Email = "submitter@mybugtracker.com";
+                submitter.EmailConfirmed = true; //To Test Email if Confirmed or not.
+                submitter.DisplayName = "The Submitter";
+
+                userManager.Create(submitter, "Password-1");
+            }
+            else
+            {
+                submitter = context.Users.First(p => p.UserName == "submitter@mybugtracker.com");
+            }
+
+            if (!userManager.IsInRole(submitter.Id, nameof(UserRoles.Submitter)))
+            {
+                userManager.AddToRole(submitter.Id, nameof(UserRoles.Submitter));
             }
 
             context.SaveChanges();

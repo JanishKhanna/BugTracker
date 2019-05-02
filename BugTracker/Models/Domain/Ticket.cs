@@ -29,6 +29,8 @@ namespace BugTracker.Models.Domain
         
         public virtual List<TicketAttachment> TicketAttachments { get; set; }
 
+        public virtual List<TicketHistory> TicketHistories { get; set; }
+
         public virtual ApplicationUser OwnerUser { get; set; }
         public string OwnerUserId { get; set; }
         
@@ -40,6 +42,7 @@ namespace BugTracker.Models.Domain
             DateCreated = DateTime.Now;
             TicketComments = new List<TicketComment>();
             TicketAttachments = new List<TicketAttachment>();
+            TicketHistories = new List<TicketHistory>();
         }
     }
 }

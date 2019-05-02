@@ -100,7 +100,14 @@
                             }
                         </td>
                         <td>
-                            @* histories *@
+                            @foreach (var history in Model.TicketHistories)
+                            {
+                                @history.User.UserName
+                                @history.PropertyName                                
+                                @history.OldValue
+                                @history.NewValue
+                                @history.DateChanged
+                            }
                         </td>
                     </tr>
 

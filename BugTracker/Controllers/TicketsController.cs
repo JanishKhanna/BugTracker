@@ -15,14 +15,12 @@ namespace BugTracker.Controllers
     public class TicketsController : Controller
     {
         private ApplicationDbContext DbContext;
-        private TicketHelper TicketHelper;
-        //private UserRolesHelper UserRolesHelper;
+        private TicketHelper TicketHelper;        
 
         public TicketsController()
         {
             DbContext = new ApplicationDbContext();
-            TicketHelper = new TicketHelper(DbContext);
-            //UserRolesHelper = new UserRolesHelper(DbContext);
+            TicketHelper = new TicketHelper(DbContext);           
         }
 
         //GET: Tickets
@@ -139,6 +137,15 @@ namespace BugTracker.Controllers
         [Authorize(Roles = nameof(UserRoles.Submitter))]
         public ActionResult CreateTicket(CreateEditTicketViewModel formData)
         {
+            var helper = new ProjectHelper(DbContext);
+            var userId = User.Identity.GetUserId();
+            var projects = helper.GetUsersProjects(userId);
+
+            if (projects == null || projects.Count < 1)
+            {
+                return RedirectToAction(nameof(HomeController.Index), "Home");
+            }
+
             return SaveTicket(null, formData);
         }
 
@@ -170,6 +177,8 @@ namespace BugTracker.Controllers
             }
 
             Ticket myTicket;
+
+
 
             if (!id.HasValue)
             {
@@ -318,7 +327,18 @@ namespace BugTracker.Controllers
                     DateCreated = p.DateCreated,
                     DateUpdated = p.DateUpdated,
                     User = p.User
+                }).ToList(),
+
+                TicketHistories = myTicket.TicketHistories.Select(p => new TicketHistoryViewModel()
+                {
+                    HistoryId = p.Id,
+                    PropertyName = p.PropertyName,
+                    OldValue = p.OldValue,
+                    NewValue = p.NewValue,
+                    User = p.User,
+                    TicketId = p.TicketId
                 }).ToList()
+
             };
 
             return View(viewModel);
