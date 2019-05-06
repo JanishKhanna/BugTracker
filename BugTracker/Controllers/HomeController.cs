@@ -16,8 +16,7 @@ namespace BugTracker.Controllers
     public class HomeController : Controller
     {
         private ApplicationDbContext DbContext;
-        private ProjectHelper ProjectHelper;
-        private ApplicationUserManager UserManager;        
+        private ProjectHelper ProjectHelper;             
      
         public HomeController()
         {
@@ -47,15 +46,17 @@ namespace BugTracker.Controllers
 
             if (isAdminOrManager)
             {
-                myProjects = DbContext.Projects.Count();
-                myTickets = DbContext.Tickets.Count();
+                myProjects = DbContext.Projects.Where(p => !p.ProjectArchived).Count();
+                myTickets = DbContext.Tickets.Where(p => !p.Project.ProjectArchived).Count();
             }
             else if (isDeveloper || isSubmitter)
             {
-                myTickets = DbContext.Tickets.ToList()
+                myTickets = DbContext.Tickets
+                            .Where(p => !p.Project.ProjectArchived)
+                            .ToList()
                             .Where(myTicket => (isSubmitter && userEmail == myTicket.OwnerUser.Email) || (myTicket.AssignedToUser != null && isDeveloper && userEmail == myTicket.AssignedToUser.Email))
                             .Count();
-                myProjects = myUser.Projects.Count;
+                myProjects = myUser.Projects.Where(p => !p.ProjectArchived).Count();
             }
             else
             {
@@ -63,12 +64,12 @@ namespace BugTracker.Controllers
             }
 
             var opentickets = DbContext.Tickets
-                                .Where(p => p.TicketStatus.Name == TypesOfStatus.Open.ToString()).Count();
+                                .Where(p => !p.Project.ProjectArchived && p.TicketStatus.Name == TypesOfStatus.Open.ToString()).Count();
             var resolvedTickets = DbContext.Tickets
-                                    .Where(p => p.TicketStatus.Name == TypesOfStatus.Resolved.ToString())
+                                    .Where(p => !p.Project.ProjectArchived && p.TicketStatus.Name == TypesOfStatus.Resolved.ToString())
                                     .Count();
             var rejectedTickets = DbContext.Tickets
-                                    .Where(p => p.TicketStatus.Name == TypesOfStatus.Rejected.ToString())
+                                    .Where(p => !p.Project.ProjectArchived && p.TicketStatus.Name == TypesOfStatus.Rejected.ToString())
                                     .Count();
             var viewModel = new DashBoardViewModel()
             {
@@ -157,7 +158,7 @@ namespace BugTracker.Controllers
             }
             else
             {
-                myProject = DbContext.Projects.FirstOrDefault(p => p.Id == id);
+                myProject = DbContext.Projects.FirstOrDefault(p => !p.ProjectArchived && p.Id == id);
 
                 if (myProject == null)
                 {
@@ -182,7 +183,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index));
             }
 
-            var myProject = DbContext.Projects.FirstOrDefault(p => p.Id == id);
+            var myProject = DbContext.Projects.FirstOrDefault(p => !p.ProjectArchived && p.Id == id);
 
             if (myProject == null)
             {
@@ -301,7 +302,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index));
             }
             var viewModel = new ProjectAssigningViewModel();
-            var myProject = DbContext.Projects.FirstOrDefault(p => p.Id == id);
+            var myProject = DbContext.Projects.FirstOrDefault(p => !p.ProjectArchived && p.Id == id);
             viewModel.ProjectId = myProject.Id;
             var users = DbContext.Users.ToList();
             var usersAssigned = myProject.ApplicationUsers.ToList();
@@ -328,7 +329,7 @@ namespace BugTracker.Controllers
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult EditMembers(ProjectAssigningViewModel formData)
         {
-            var myProject = DbContext.Projects.FirstOrDefault(p => p.Id == formData.ProjectId);
+            var myProject = DbContext.Projects.FirstOrDefault(p => !p.ProjectArchived && p.Id == formData.ProjectId);
             if (myProject == null)
             {
                 return RedirectToAction(nameof(HomeController.Index));
@@ -354,6 +355,28 @@ namespace BugTracker.Controllers
 
             DbContext.SaveChanges();
             return RedirectToAction("Index");
-        }        
+        }
+        
+        [HttpPost]
+        [Authorize (Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
+        public ActionResult ArchiveProjects(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index));
+            }
+
+            var myProject = DbContext.Projects.FirstOrDefault(p => !p.ProjectArchived && p.Id == id);
+
+            if(myProject == null)
+            {
+                return RedirectToAction(nameof(HomeController.Index));
+            }
+
+            myProject.ProjectArchived = true;
+            DbContext.SaveChanges();
+
+            return RedirectToAction(nameof(HomeController.Index));
+        }
     }
 }

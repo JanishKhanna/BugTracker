@@ -18,17 +18,19 @@ namespace BugTracker.Models.MyHelpers
         public Project GetProjectById(int id)
         {
             return DbContext.Projects.FirstOrDefault(
-                p => p.Id == id);
+                p => !p.ProjectArchived && p.Id == id);
         }
 
         public List<Project> GetUsersProjects(string userId)
         {
             return DbContext.Projects
-                .Where(p => p.ApplicationUsers
+                .Where(p => !p.ProjectArchived && p.ApplicationUsers
                 .Any(user => user.Id == userId))
                 .ToList();
         }
 
-        public List<Project> GetAllProjects() => DbContext.Projects.ToList();
+        public List<Project> GetAllProjects() => DbContext.Projects
+            .Where(p => !p.ProjectArchived)
+            .ToList();
     }
 }

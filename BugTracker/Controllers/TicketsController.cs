@@ -92,7 +92,9 @@ namespace BugTracker.Controllers
             bool isDeveloper = User.IsInRole(nameof(UserRoles.Developer));
             string userEmail = myCurrentUser.Email;
 
-            var viewModel = DbContext.Tickets.ToList()
+            var viewModel = DbContext.Tickets
+                            .Where(p => !p.Project.ProjectArchived)
+                            .ToList()
                             .Where(myTicket => (isSubmitter && userEmail == myTicket.OwnerUser.Email) || (myTicket.AssignedToUser != null && isDeveloper && userEmail == myTicket.AssignedToUser.Email) || myCurrentUser.Projects.Any(p => p.Id == myTicket.ProjectId))
                             .Select(p => new TicketViewModel
                             {
@@ -189,7 +191,7 @@ namespace BugTracker.Controllers
                     TicketPriority = DbContext.TicketPriorities
                                         .First(p => p.Id == formData.TicketPriorityId),
                     Project = DbContext.Projects
-                                .First(p => p.Id == formData.ProjectId),
+                                .First(p => !p.ProjectArchived && p.Id == formData.ProjectId),
                     DateCreated = DateTime.Now,
                     OwnerUser = DbContext.Users
                                     .First(p => p.Id == userId),
@@ -201,7 +203,7 @@ namespace BugTracker.Controllers
             }
             else
             {
-                myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+                myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
                 if (myTicket == null)
                 {
@@ -261,7 +263,7 @@ namespace BugTracker.Controllers
                 {
                     var ticketHistory = new TicketHistory()
                     {
-                        NewValue = DbContext.Projects.First(p => p.Id == formData.ProjectId).Name,
+                        NewValue = DbContext.Projects.First(p => !p.ProjectArchived && p.Id == formData.ProjectId).Name,
                         OldValue = myTicket.Project.Name,
                         PropertyName = nameof(myTicket.Project),
                         User = ticketEditor,
@@ -357,7 +359,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(TicketsController.AllTickets));
             }
 
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (myTicket == null)
             {
@@ -399,7 +401,7 @@ namespace BugTracker.Controllers
         [Authorize]
         public ActionResult EditTicket(int id, CreateEditTicketViewModel formData)
         {
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (myTicket == null)
             {
@@ -420,7 +422,7 @@ namespace BugTracker.Controllers
         [Authorize]
         public ActionResult Details(int? id)
         {
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (!id.HasValue)
             {
@@ -478,7 +480,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(TicketsController.MyTickets));
             }
 
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (myTicket == null)
             {
@@ -504,7 +506,7 @@ namespace BugTracker.Controllers
         [Authorize]
         public ActionResult CreateComments(int id, CreateCommentViewModel formData)
         {
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (myTicket == null)
             {
@@ -534,12 +536,12 @@ namespace BugTracker.Controllers
             if (!id.HasValue)
             {
                 var userId = User.Identity.GetUserId();
-                var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == formData.TicketId);
+                var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == formData.TicketId);
 
                 if (myTicket == null)
                 {
                     return RedirectToAction(nameof(TicketsController.Details), new { id = ticketId });
-                }                
+                }
 
                 myComment = new TicketComment()
                 {
@@ -552,7 +554,7 @@ namespace BugTracker.Controllers
                     var userManager = HttpContext.GetOwinContext()
                                     .GetUserManager<ApplicationUserManager>();
 
-                    userManager.SendEmail(myTicket.AssignedToUserId, "New Comment Added", $"A New Comment was added to '{myTicket.Title}' by '{myComment.User.UserName}'"); 
+                    userManager.SendEmail(myTicket.AssignedToUserId, "New Comment Added", $"A New Comment was added to '{myTicket.Title}' by '{myComment.User.UserName}'");
                 }
 
                 DbContext.AllComments.Add(myComment);
@@ -647,7 +649,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(TicketsController.AllTickets));
             }
 
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (myTicket == null)
             {
@@ -672,7 +674,7 @@ namespace BugTracker.Controllers
         [Authorize(Roles = nameof(UserRoles.Admin) + "," + nameof(UserRoles.ProjectManager))]
         public ActionResult AssignTickets(int? id, AssignTicketViewModel formData)
         {
-            var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == id);
+            var myTicket = DbContext.Tickets.FirstOrDefault(p => !p.Project.ProjectArchived && p.Id == id);
 
             if (myTicket == null)
             {
@@ -700,7 +702,7 @@ namespace BugTracker.Controllers
                     var userManager = HttpContext.GetOwinContext()
                         .GetUserManager<ApplicationUserManager>();
 
-                    userManager.SendEmail(formData.DeveloperId, "You are Assigned to a Ticket", $"You were Assigned to '{myTicket.Title}'" );
+                    userManager.SendEmail(formData.DeveloperId, "You are Assigned to a Ticket", $"You were Assigned to '{myTicket.Title}'");
                 }
 
                 myTicket.AssignedToUserId = formData.DeveloperId;

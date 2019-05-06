@@ -46,6 +46,7 @@
             <th>Date Updated</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -66,6 +67,11 @@
                     <a href="@Url.Action("EditMembers", "Home", new { id = project.ProjectId })">
                         <i title="Edit Members" class="fas fa-user-friends"></i>
                     </a>
+                </td>
+                <td>
+                    <form method="post" action="@Url.Action("ArchiveProjects", "Home", new { id = project.ProjectId})">
+                        <button><i title="Archive Project"  class="fas fa-archive"></i></button>
+                    </form>
                 </td>
             </tr>
 

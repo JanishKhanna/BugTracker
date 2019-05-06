@@ -48,6 +48,7 @@ else
                 <th>Date Updated</th>
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -78,8 +79,17 @@ else
                             </a>
                         }
                     </td>
+                    <td>
+                        @if (User.IsInRole(nameof(UserRoles.Admin)) || User.IsInRole(nameof(UserRoles.ProjectManager)))
+                        {
+                            <form method="post" action="@Url.Action("ArchiveProjects", "Home", new { id = project.ProjectId})">
+                                <button>
+                                    <i title="Archive Project" class="fas fa-archive"></i>
+                                </button>
+                            </form>
+                        }
+                    </td>
                 </tr>
-
             }
         </tbody>
     </table>

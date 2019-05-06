@@ -15,12 +15,14 @@ namespace BugTracker.Models.MyHelpers
             DbContext = dbContext;
         }
 
-        public List<Ticket> GetAllTickets() => DbContext.Tickets.ToList();
+        public List<Ticket> GetAllTickets() => DbContext.Tickets
+            .Where(p => !p.Project.ProjectArchived)
+            .ToList();
 
         public Ticket GetTicketById(int id)
         {
             return DbContext.Tickets.FirstOrDefault(
-                p => p.Id == id);
+                p => !p.Project.ProjectArchived && p.Id == id);
         }
     }
 }
