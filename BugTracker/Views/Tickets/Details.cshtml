@@ -84,7 +84,7 @@
 
                                                 <div style="display: flex; flex-flow:row; justify-content:space-between; width:100px;">
                                                     <span>
-                                                        @Html.ActionLink("Edit", "EditComment", new                                 { id = comment.CommentId })
+                                                        @Html.ActionLink("Edit", "EditComment", new { id = comment.CommentId })
                                                     </span>
                                                     <form method="post"
                                                           action="@Url.Action("DeleteComment",      "Tickets", new { id = comment.CommentId, ticketId = Model.TicketId })">
@@ -99,18 +99,44 @@
                                 }
                             }
                         </td>
-                        <td>
+                        <td style="display: flex; width:120%; flex-flow: column; justify-content: space-between">
+                            <h6><strong>History</strong></h6>
                             @foreach (var history in Model.TicketHistories)
                             {
-                                @history.User.UserName
-                                @history.PropertyName                                
-                                @history.OldValue
-                                @history.NewValue
-                                @history.DateChanged
+                                <ul style="list-style-type:none; margin-left:-40px">
+                                    <li>
+                                        <div class="well well-sm">
+
+
+                                            <div class="header">
+                                                <strong>
+                                                    User Name: @history.User.UserName
+                                                </strong>
+                                                <small class="pull-right text-muted">
+                                                    <span>
+                                                        Changed At: @history.DateChanged
+                                                    </span>
+                                                </small>
+                                                <div>
+                                                    <strong>Property Changed:</strong>
+                                                    @history.PropertyName
+                                                </div>
+                                                <div>
+                                                    <strong>Old Value:</strong>
+                                                    @history.OldValue
+                                                </div>
+                                                <div>
+                                                    <strong>New Value:</strong>
+                                                    @history.NewValue
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </li>
+                                </ul>
                             }
                         </td>
                     </tr>
-
                 </tbody>
             </table>
         </div>

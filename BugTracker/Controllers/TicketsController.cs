@@ -3,6 +3,7 @@ using BugTracker.Models.Domain;
 using BugTracker.Models.MyHelpers;
 using BugTracker.Models.ViewModels;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -15,12 +16,12 @@ namespace BugTracker.Controllers
     public class TicketsController : Controller
     {
         private ApplicationDbContext DbContext;
-        private TicketHelper TicketHelper;        
+        private TicketHelper TicketHelper;
 
         public TicketsController()
         {
             DbContext = new ApplicationDbContext();
-            TicketHelper = new TicketHelper(DbContext);           
+            TicketHelper = new TicketHelper(DbContext);
         }
 
         //GET: Tickets
@@ -151,10 +152,11 @@ namespace BugTracker.Controllers
 
         private ActionResult SaveTicket(int? id, CreateEditTicketViewModel formData)
         {
+            var userId = User.Identity.GetUserId();
+
             if (!ModelState.IsValid)
             {
                 var helper = new ProjectHelper(DbContext);
-                var userId = User.Identity.GetUserId();
                 var projects = helper.GetUsersProjects(userId);
                 var projectSelectList = new SelectList(projects, nameof(Project.Id), nameof(Project.Name));
                 var ticketTypeSelectList = new SelectList(DbContext.TicketTypes, nameof(TicketType.Id), nameof(TicketType.Name));
@@ -178,12 +180,8 @@ namespace BugTracker.Controllers
 
             Ticket myTicket;
 
-
-
             if (!id.HasValue)
             {
-                var userId = User.Identity.GetUserId();
-
                 myTicket = new Ticket()
                 {
                     TicketType = DbContext.TicketTypes
@@ -212,16 +210,142 @@ namespace BugTracker.Controllers
                 myTicket.DateUpdated = DateTime.Now;
             }
 
-            myTicket.Title = formData.Title;
-            myTicket.Description = formData.Description;
-            myTicket.ProjectId = formData.ProjectId;
-            myTicket.TicketTypeId = formData.TicketTypeId;
-            myTicket.TicketPriorityId = formData.TicketPriorityId;
-            myTicket.TicketStatusId = formData.TicketStatusId;
+            //History
+
+            var ticketEditor = DbContext.Users.First(p => p.Id == userId);
+
+            if (myTicket.Title != formData.Title)
+            {
+                //To prevent making a ticket history for new tickets created
+                if (id.HasValue)
+                {
+                    var ticketHistory = new TicketHistory()
+                    {
+                        NewValue = formData.Title,
+                        OldValue = myTicket.Title,
+                        PropertyName = nameof(myTicket.Title),
+                        User = ticketEditor,
+                        DateChanged = DateTime.Now,
+                    };
+
+                    DbContext.TicketHistories.Add(ticketHistory);
+                    myTicket.TicketHistories.Add(ticketHistory);
+                }
+
+                myTicket.Title = formData.Title;
+            }
+
+            if (myTicket.Description != formData.Description)
+            {
+                if (id.HasValue)
+                {
+                    var ticketHistory = new TicketHistory()
+                    {
+                        NewValue = formData.Description,
+                        OldValue = myTicket.Description,
+                        PropertyName = nameof(myTicket.Description),
+                        User = ticketEditor,
+                        DateChanged = DateTime.Now,
+                    };
+
+                    DbContext.TicketHistories.Add(ticketHistory);
+                    myTicket.TicketHistories.Add(ticketHistory);
+                }
+
+                myTicket.Description = formData.Description;
+            }
+
+            if (myTicket.ProjectId != formData.ProjectId)
+            {
+                if (id.HasValue)
+                {
+                    var ticketHistory = new TicketHistory()
+                    {
+                        NewValue = DbContext.Projects.First(p => p.Id == formData.ProjectId).Name,
+                        OldValue = myTicket.Project.Name,
+                        PropertyName = nameof(myTicket.Project),
+                        User = ticketEditor,
+                        DateChanged = DateTime.Now,
+                    };
+
+                    DbContext.TicketHistories.Add(ticketHistory);
+                    myTicket.TicketHistories.Add(ticketHistory);
+                }
+
+                myTicket.ProjectId = formData.ProjectId;
+            }
+
+            if (myTicket.TicketTypeId != formData.TicketTypeId)
+            {
+                if (id.HasValue)
+                {
+                    var ticketHistory = new TicketHistory()
+                    {
+                        NewValue = DbContext.TicketTypes.First(p => p.Id == formData.TicketTypeId).Name,
+                        OldValue = myTicket.TicketType.Name,
+                        PropertyName = "Ticket Type",
+                        User = ticketEditor,
+                        DateChanged = DateTime.Now,
+                    };
+
+                    DbContext.TicketHistories.Add(ticketHistory);
+                    myTicket.TicketHistories.Add(ticketHistory);
+                }
+
+                myTicket.TicketTypeId = formData.TicketTypeId;
+            }
+
+            if (myTicket.TicketPriorityId != formData.TicketPriorityId)
+            {
+                if (id.HasValue)
+                {
+                    var ticketHistory = new TicketHistory()
+                    {
+                        NewValue = DbContext.TicketPriorities.First(p => p.Id == formData.TicketPriorityId).Name,
+                        OldValue = myTicket.TicketPriority.Name,
+                        PropertyName = "Ticket Priority",
+                        User = ticketEditor,
+                        DateChanged = DateTime.Now,
+                    };
+
+                    DbContext.TicketHistories.Add(ticketHistory);
+                    myTicket.TicketHistories.Add(ticketHistory);
+                }
+
+                myTicket.TicketPriorityId = formData.TicketPriorityId;
+            }
+
+            if (myTicket.TicketStatusId != formData.TicketStatusId)
+            {
+                if (id.HasValue)
+                {
+                    var ticketHistory = new TicketHistory()
+                    {
+                        NewValue = DbContext.TicketStatuses.First(p => p.Id == formData.TicketStatusId).Name,
+                        OldValue = myTicket.TicketStatus.Name,
+                        PropertyName = "Ticket Status",
+                        User = ticketEditor,
+                        DateChanged = DateTime.Now,
+                    };
+
+                    DbContext.TicketHistories.Add(ticketHistory);
+                    myTicket.TicketHistories.Add(ticketHistory);
+                }
+
+                myTicket.TicketStatusId = formData.TicketStatusId;
+            }
+
+            if (myTicket.AssignedToUserId != null)
+            {
+                var userManager = HttpContext.GetOwinContext()
+                                .GetUserManager<ApplicationUserManager>();
+
+                userManager.SendEmail(myTicket.AssignedToUserId, "Ticket was Modified", $"'{myTicket.Title}' was Modified by '{ticketEditor.UserName}'");
+            }
 
             DbContext.SaveChanges();
 
-            return RedirectToAction(nameof(TicketsController.MyTickets));
+            return RedirectToAction(nameof(TicketsController.Details), new { id = myTicket.Id });
         }
 
         [HttpGet]
@@ -336,7 +460,8 @@ namespace BugTracker.Controllers
                     OldValue = p.OldValue,
                     NewValue = p.NewValue,
                     User = p.User,
-                    TicketId = p.TicketId
+                    TicketId = p.TicketId,
+                    DateChanged = p.DateChanged
                 }).ToList()
 
             };
@@ -409,12 +534,12 @@ namespace BugTracker.Controllers
             if (!id.HasValue)
             {
                 var userId = User.Identity.GetUserId();
-                var comment = DbContext.Tickets.FirstOrDefault(p => p.Id == formData.TicketId);
+                var myTicket = DbContext.Tickets.FirstOrDefault(p => p.Id == formData.TicketId);
 
-                if (comment == null)
+                if (myTicket == null)
                 {
                     return RedirectToAction(nameof(TicketsController.Details), new { id = ticketId });
-                }
+                }                
 
                 myComment = new TicketComment()
                 {
@@ -422,8 +547,16 @@ namespace BugTracker.Controllers
                     User = DbContext.Users.FirstOrDefault(p => p.Id == userId),
                 };
 
+                if (myTicket.AssignedToUserId != null)
+                {
+                    var userManager = HttpContext.GetOwinContext()
+                                    .GetUserManager<ApplicationUserManager>();
+
+                    userManager.SendEmail(myTicket.AssignedToUserId, "New Comment Added", $"A New Comment was added to '{myTicket.Title}' by '{myComment.User.UserName}'"); 
+                }
+
                 DbContext.AllComments.Add(myComment);
-                comment.TicketComments.Add(myComment);
+                myTicket.TicketComments.Add(myComment);
             }
             else
             {
@@ -546,11 +679,35 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(TicketsController.AllTickets));
             }
 
-            myTicket.AssignedToUserId = formData.DeveloperId;
+            if (myTicket.AssignedToUserId != formData.DeveloperId)
+            {
+                var userId = User.Identity.GetUserId();
 
-            DbContext.SaveChanges();
+                var ticketHistory = new TicketHistory()
+                {
+                    NewValue = DbContext.Users.FirstOrDefault(p => p.Id == formData.DeveloperId)?.UserName ?? "No User Assigned to this Ticket",
+                    OldValue = myTicket.AssignedToUser?.UserName ?? "Didn't Assign any User",
+                    PropertyName = "Assigned User",
+                    User = DbContext.Users.First(p => p.Id == userId),
+                    DateChanged = DateTime.Now,
+                };
+
+                DbContext.TicketHistories.Add(ticketHistory);
+                myTicket.TicketHistories.Add(ticketHistory);
+
+                if (formData.DeveloperId != null)
+                {
+                    var userManager = HttpContext.GetOwinContext()
+                        .GetUserManager<ApplicationUserManager>();
+
+                    userManager.SendEmail(formData.DeveloperId, "You are Assigned to a Ticket", $"You were Assigned to '{myTicket.Title}'" );
+                }
+
+                myTicket.AssignedToUserId = formData.DeveloperId;
+                DbContext.SaveChanges();
+            }
 
             return RedirectToAction(nameof(TicketsController.AllTickets));
-        }        
+        }
     }
 }
